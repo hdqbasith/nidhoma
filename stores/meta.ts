@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { Meta } from '~/types/meta';
 
 export const useMetaStore = defineStore('meta', () => {
   const { refresh, data } = useFetch<Meta>(

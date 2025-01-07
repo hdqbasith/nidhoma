@@ -1,0 +1,29 @@
+export interface Meta {
+    namaMadrasah:  string;
+    namaMadrasah2: string;
+    tingkatan:     string;
+    alamat:        string;
+    jalan:         string;
+    desa:          string;
+    kecamatan:     string;
+    kabupaten:     string;
+    provinsi:      string;
+    kodepos:       string;
+    map:           string;
+    telepon:       string;
+    email:         string;
+    visi:          string;
+    misi:          string;
+    kepala:        string;
+    tahun_ajaran:  string;
+    semester:      string;
+    logo:          string;
+    kop:           string;
+    website:       string;
+    kurikulum:     string;
+    npsn:          string;
+    nim:           string;
+    jumlah_guru:   string;
+    jumlah_siswa:  string;
+    jumlah_kelas:  string;
+}

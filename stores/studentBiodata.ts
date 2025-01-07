@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import type { StudentBiodata, StudentDomicile, StudentFather, StudentGuardian, StudentMother, StudentPersonal } from '~/types/user/biodataSiswa';
 
 export const useStudentBiodataStore = defineStore('studentBiodata', () => {
   const studentId = ref()
