@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const authStore = useAuthStore();
 
     return nuxtApp.runWithContext(async () => {
-        // const router = useRouter();
+        const router = useRouter();
 
         // 基本路由，这些路由不需要进入权限拦截
         if (coreRouteNames.includes(to.name as string)) {
