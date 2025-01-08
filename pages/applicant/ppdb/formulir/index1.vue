@@ -43,6 +43,9 @@ const data = [
 const list = computed(() => {
     return data.filter((d) => d.active == true)
 })
+definePageMeta({
+    title:"menu.ppdb.form"
+})
 </script>
 <template>
     <Card>

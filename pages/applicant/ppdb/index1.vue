@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
 
 definePageMeta({
-    title:"page.dashboard.title"
+    title:"menu.ppdb.ppdb",
 })
 </script>
 <template>

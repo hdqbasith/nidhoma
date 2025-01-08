@@ -5,7 +5,7 @@ definePageMeta({
 })
 </script>
 <template>
-    <NuxtLayout name='basic'>
+    <NuxtLayout>
 
         <NuxtPage/>
     </NuxtLayout>

@@ -25,7 +25,7 @@ await initPreferences({
 
   <!-- <NuxtLayout> -->
   <div>
-    <NuxtPage />
+    <NuxtPage/>
   </div>
   <!-- </NuxtLayout> -->
   <NuxtLoadingIndicator class="!opacity-100" :throttle="0" />

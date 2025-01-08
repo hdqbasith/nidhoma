@@ -1,0 +1,12 @@
+{
+  "ppdb": {
+    "domicile": "Domicile",
+    "father": "Father",
+    "form": "Form",
+    "guardian": "Guardian",
+    "mother": "Mother",
+    "personal": "Personal",
+    "ppdb": "Admission",
+    "previous_school": "Graduated From"
+  }
+}

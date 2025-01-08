@@ -1,4 +1,5 @@
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from "~/packages/constants";
+import { preferences } from "~/packages/preferences";
 import { generateAccess } from "~/packages/router/access";
 import { accessRoutes, coreRouteNames } from "~/packages/router/routes";
 import { useAccessStore, useUserStore } from "~/packages/stores";
@@ -9,9 +10,9 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const userStore = useUserStore();
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
-    
+
     return nuxtApp.runWithContext(async () => {
-        const router = useRouter();
+        // const router = useRouter();
 
         // 基本路由，这些路由不需要进入权限拦截
         if (coreRouteNames.includes(to.name as string)) {
@@ -61,26 +62,32 @@ export default defineNuxtRouteMiddleware((to, from) => {
         // 生成菜单和路由
         const { accessibleMenus, accessibleRoutes } = await generateAccess({
             roles: userRoles,
+            
             router,
             // 则会在菜单中显示，但是访问会被重定向到403
             routes: accessRoutes,
         });
         console.log(accessibleMenus);
-        
+
 
         // 保存菜单信息和路由信息
         accessStore.setAccessMenus(accessibleMenus);
-        
+
         accessStore.setAccessRoutes(accessibleRoutes);
         accessStore.setIsAccessChecked(true);
+        // if(!from.redirectedFrom){
+        //     return navigateTo('/dashboard');
+        // }
+        
         const redirectPath = (from.query.redirect ??
             (to.path === DEFAULT_HOME_PATH
                 ? userInfo.homePath || DEFAULT_HOME_PATH
-                : to.fullPath)) as string;
-
-        return {
-            ...router.resolve(decodeURIComponent(redirectPath)),
-            replace: true,
-        };
+                : to.fullPath));
+        
+        return navigateTo(redirectPath,{replace:true});
+        // return {
+        //     ...router.resolve(decodeURIComponent(redirectPath)),
+        //     replace: true,
+        // };
     });
 });

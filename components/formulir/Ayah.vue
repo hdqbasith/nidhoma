@@ -4,8 +4,6 @@ import { Boxes, Loader2, Save } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
-import DataTableFacetedFilter from '~/components/table/post/DataTableFacetedFilter.vue';
-
 const auth = useAuthStore();
 const router = useRouter();
 const setting = useSettingsStore()

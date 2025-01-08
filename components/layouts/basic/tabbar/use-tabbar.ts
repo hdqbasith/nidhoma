@@ -80,11 +80,13 @@ export function useTabbar() {
   };
 
   function wrapperTabLocale(tab: RouteLocationNormalizedGeneric) {
+    console.log(tab.meta.title);
+    
     return {
       ...tab,
       meta: {
         ...tab?.meta,
-        // title: $t(tab?.meta?.title as string),
+        title: $t(tab?.meta?.title as string) ,
       },
     };
   }

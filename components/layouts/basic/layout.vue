@@ -285,13 +285,13 @@ const headerSlots = computed(() => {
     </template>
     <!-- 侧边额外区域 -->
     <template #side-extra>
-      <!-- <LayoutExtraMenu
+      <LayoutExtraMenu
         :accordion="preferences.navigation.accordion"
         :collapse="preferences.sidebar.extraCollapse"
         :menus="wrapperMenus(extraMenus)"
         :rounded="isMenuRounded"
         :theme="sidebarTheme"
-      /> -->
+      />
     </template>
     <template #side-extra-title>
       <VbenLogo

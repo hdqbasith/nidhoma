@@ -1,11 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-    
     middleware:'guard',
 })
 </script>
 <template>
-    <NuxtLayout name='basic'>
+    <NuxtLayout>
         <NuxtPage/>
     </NuxtLayout>
 </template>
