@@ -33,7 +33,7 @@ const breadcrumbs = computed((): IBreadcrumb[] => {
     const { meta, path } = match;
     const { hideChildrenInMenu, hideInBreadcrumb, icon, name, title } =
       meta || {};
-    if (hideInBreadcrumb || hideChildrenInMenu || !path) {
+    if (hideInBreadcrumb || hideChildrenInMenu || !path || !match.name) {
       continue;
     }
 

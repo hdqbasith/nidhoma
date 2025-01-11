@@ -1,8 +1,8 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware:'guard',
     title:"page.dashboard.title",
-    name:"Applicant"
+    name:"Applicant",
+    middleware:"guard"
 })
 </script>
 <template>

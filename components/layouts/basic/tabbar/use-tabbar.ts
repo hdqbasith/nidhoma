@@ -19,7 +19,7 @@ import {
   RotateCw,
   X,
 } from '~/packages/icons';
-import { $t, useI18n } from '~/packages/locales';
+import { $t, i18n, useI18n } from '~/packages/locales';
 import { useAccessStore, useTabbarStore } from '~/packages/stores';
 import { filterTree } from '~/packages/utils';
 
@@ -55,7 +55,7 @@ export function useTabbar() {
       () => locale.value,
     ],
     ([tabs]) => {
-      currentTabs.value = tabs.map((item) => wrapperTabLocale(item));      
+      currentTabs.value = tabs.map((item) => wrapperTabLocale(item));
     },
   );
 
@@ -81,12 +81,12 @@ export function useTabbar() {
 
   function wrapperTabLocale(tab: RouteLocationNormalizedGeneric) {
     console.log(tab.meta.title);
-    
+
     return {
       ...tab,
       meta: {
         ...tab?.meta,
-        title: $t(tab?.meta?.title as string) ,
+        title: i18n.global.te(tab?.meta?.title as string) ? $t(tab?.meta?.title as string) : (tab?.meta?.title as string),
       },
     };
   }
@@ -103,10 +103,12 @@ export function useTabbar() {
     () => route.path,
     () => {
       const meta = route.matched?.[route.matched.length - 1]?.meta;
-      tabbarStore.addTab({
-        ...route,
-        meta: meta || route.meta,
-      });
+      if (route.name) {
+        tabbarStore.addTab({
+          ...route,
+          meta: meta || route.meta,
+        });
+      }
     },
     { immediate: true },
   );

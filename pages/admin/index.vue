@@ -1,8 +1,10 @@
 <script setup lang="ts">
-
+definePageMeta({
+  'title':'admin'
+})
 </script>
 <template>
     <div>
-        Cek
+        Jangan lupa makan...
     </div>
 </template>

@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     'nuxt-security',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    'nuxt-file-storage'
   ],
   tailwindcss: {
     configPath: '~/assets/css'

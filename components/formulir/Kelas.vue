@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+
 
 </script>
 <template>

@@ -16,6 +16,9 @@ import UserDropdown from '~/components/layouts/widgets/user-dropdown/user-dropdo
 import Notification from '~/components/layouts/widgets/notification/notification.vue';
 import { AuthenticationLoginExpiredModal } from '~/packages/effects/common-ui';
 import LockScreen from '~/components/layouts/widgets/lock-screen/lock-screen.vue';
+import { registerAccessDirective } from '~/packages/effects/access';
+
+
 const notifications = ref<NotificationItem[]>([
   {
     avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
@@ -50,6 +53,10 @@ const notifications = ref<NotificationItem[]>([
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
+if(!accessStore.isReady){
+  registerAccessDirective(useNuxtApp().vueApp)
+  accessStore.setIsReady()
+}
 const { destroyWatermark, updateWatermark } = useWatermark();
 const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
