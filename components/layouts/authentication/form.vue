@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { KeepAlive } from 'vue';
+
 defineOptions({
   name: 'AuthenticationFormView',
 });

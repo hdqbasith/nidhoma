@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { z } from 'zod';
+import { requestClient } from '~/packages/api/request';
 import { AuthenticationRegister, type VbenFormSchema } from '~/packages/effects/common-ui';
 import { $t } from '~/packages/locales';
 import type { Recordable } from '~/packages/types';
@@ -7,7 +8,8 @@ import type { Recordable } from '~/packages/types';
 defineOptions({ name: 'Register' });
 
 const loading = ref(false);
-
+const nuxtlink = resolveComponent('NuxtLink');
+const authStore = useAuthStore();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
@@ -15,7 +17,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       componentProps: {
         placeholder: $t('authentication.usernameTip'),
       },
-      fieldName: 'username',
+      fieldName: 'email',
       label: $t('authentication.username'),
       rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
     },
@@ -51,7 +53,7 @@ const formSchema = computed((): VbenFormSchema[] => {
         },
         triggerFields: ['password'],
       },
-      fieldName: 'confirmPassword',
+      fieldName: 'password_confirmation',
       label: $t('authentication.confirmPassword'),
     },
     {
@@ -64,8 +66,8 @@ const formSchema = computed((): VbenFormSchema[] => {
             h(
               'a',
               {
-                class: 'vben-link ml-1 ',
-                href: '',
+                class: 'vben-link ml-1',
+                onClick: () => navigateTo('/privacy-and-policy')
               },
               `${$t('authentication.privacyPolicy')} & ${$t('authentication.terms')}`,
             ),
@@ -79,15 +81,10 @@ const formSchema = computed((): VbenFormSchema[] => {
 });
 
 function handleSubmit(value: Recordable<any>) {
-  // eslint-disable-next-line no-console
-  console.log('register submit:', value);
+  authStore.authRegister(value);
 }
 </script>
 
 <template>
-  <AuthenticationRegister
-    :form-schema="formSchema"
-    :loading="loading"
-    @submit="handleSubmit"
-  />
+  <AuthenticationRegister :form-schema="formSchema" :loading="loading" @submit="handleSubmit" />
 </template>

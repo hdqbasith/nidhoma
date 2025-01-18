@@ -30,8 +30,8 @@ export interface InitStoreOptions {
 //   app.use(pinia);
 //   return pinia;
 // }
-pinia=useNuxtApp().$pinia;
 export function resetAllStores() {
+  pinia=useNuxtApp().$pinia;
   if (!pinia) {
     console.error('Pinia is not installed');
     return;

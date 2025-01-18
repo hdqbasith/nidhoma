@@ -12,6 +12,7 @@ export namespace AuthApi {
   /** 登录接口返回值 */
   export interface LoginResult {
     accessToken: string;
+    user:any;
   }
 
   export interface RefreshTokenResult {
@@ -32,6 +33,15 @@ export async function loginApi(data: AuthApi.LoginParams) {
   // );  
   return requestClient.post<AuthApi.LoginResult>('/auth/login', data);
 }
+export async function registerApi(data: AuthApi.LoginParams) {
+  // eslint-disable-next-line no-console
+  // console.log(
+  //   JSON.stringify(
+  //     requestClient.post<AuthApi.LoginResult>('/auth/login', data),
+  //   ),
+  // );  
+  return requestClient.post<AuthApi.LoginResult>('/auth/register', data);
+}
 
 /**
  * 刷新accessToken
@@ -46,9 +56,7 @@ export async function refreshTokenApi() {
  * 退出登录
  */
 export async function logoutApi() {
-  return baseRequestClient.post('/auth/logout', {
-    withCredentials: true,
-  });
+  return baseRequestClient.post('/auth/logout');
 }
 
 /**

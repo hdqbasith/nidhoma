@@ -19,7 +19,7 @@ defineOptions({
     </div>
 
     <div class="mt-4 flex flex-wrap justify-center">
-      <VbenIconButton class="mb-3">
+      <!-- <VbenIconButton class="mb-3">
         <MdiWechat />
       </VbenIconButton>
       <VbenIconButton class="mb-3">
@@ -27,9 +27,9 @@ defineOptions({
       </VbenIconButton>
       <VbenIconButton class="mb-3">
         <MdiGithub />
-      </VbenIconButton>
-      <VbenIconButton class="mb-3">
-        <MdiGoogle />
+      </VbenIconButton> -->
+      <VbenIconButton class="mb-3 w-full">
+        <MdiGoogle />mail
       </VbenIconButton>
     </div>
   </div>

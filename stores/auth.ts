@@ -3,7 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '~/packages/api';
+import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi, registerApi } from '~/packages/api';
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '~/packages/constants';
 import { resetAllStores, useAccessStore, useUserStore } from '~/packages/stores';
 import type { Recordable, UserInfo } from '~/packages/types';
@@ -80,6 +80,65 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
+  /**
+   * 异步处理登录操作
+   * Asynchronously handle the register process
+   * @param params 登录表单数据
+   */
+  async function authRegister(
+    params: Recordable<any>,
+    onSuccess?: () => Promise<void> | void,
+  ) {
+    // 异步处理用户登录操作并获取 accessToken
+    let userInfo: null | UserInfo = null;
+    try {
+      loginLoading.value = true;
+      const { accessToken, user } = await registerApi(params);
+      console.log(accessToken);
+      console.log(user);
+      
+
+      // 如果成功获取到 accessToken
+      if (accessToken) {
+        // 将 accessToken 存储到 accessStore 中
+        accessStore.setAccessToken(accessToken);
+
+        // 获取用户信息并存储到 accessStore 中
+        const [fetchUserInfoResult, accessCodes] = await Promise.all([
+          fetchUserInfo(),
+          getAccessCodesApi(),
+        ]);
+
+        userInfo = fetchUserInfoResult;
+
+        userStore.setUserInfo(userInfo);
+        accessStore.setAccessCodes(accessCodes);
+
+        if (accessStore.loginExpired) {
+          accessStore.setLoginExpired(false);
+        } else {
+          onSuccess
+            ? await onSuccess?.()
+            : await router.push(userInfo?.homePath || DEFAULT_HOME_PATH);
+        }
+
+        // if (userInfo?.realName) {
+        //   ElNotification({
+        //     message: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+        //     title: $t('authentication.loginSuccess'),
+        //     type: 'success',
+        //   });
+        // }
+      }
+    } finally {
+      loginLoading.value = false;
+    }
+
+    return {
+      userInfo,
+    };
+  }
+
   async function logout(redirect: boolean = true) {
     try {
       await logoutApi();
@@ -114,6 +173,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     $reset,
     authLogin,
+    authRegister,
     fetchUserInfo,
     loginLoading,
     logout,
