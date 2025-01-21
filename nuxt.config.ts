@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/i18n',
-    'nuxt-file-storage'
+    'nuxt-file-storage',
+    'nuxt-auth-sanctum',
   ],
   tailwindcss: {
     configPath: '~/assets/css'
@@ -34,8 +35,25 @@ export default defineNuxtConfig({
       },
     },
   },
-  piniaPluginPersistedstate:{
-    storage:'localStorage',
-    key:'nidhoma-%id',
+  piniaPluginPersistedstate: {
+    storage: 'localStorage',
+    key: 'nidhoma-%id',
+  },
+  sanctum: {
+    userStateKey:'nidhoma',
+    baseUrl: 'http://127.0.0.1:80/api/v2', // Laravel API
+    endpoints:{
+      login:'/auth/login',
+      user:'/user',
+      logout:'/auth/logout',
+    },
+    redirect:{
+      onAuthOnly:'/auth/login',
+      onLogin:'/dashboard',
+
+    },
+    redirectIfAuthenticated:true,
+    logLevel:3,
+    mode:'token'
   },
 })

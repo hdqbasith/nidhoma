@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware:"guard"
+    middleware:['sanctum:auth']
 })
 </script>
 <template>

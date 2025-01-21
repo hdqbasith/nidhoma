@@ -40,7 +40,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                         ? {}
                         : { redirect: encodeURIComponent(to.fullPath) },
                 // 携带当前跳转的页面，登录后重新跳转该页面
-                replace: true,
+                // replace: true,
             };
         }
         return to;
@@ -73,8 +73,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             ? userInfo.homePath || DEFAULT_HOME_PATH
             : to.fullPath)) as string;
     if(from.query.redirect){
-        to.fullPath=decodeURIComponent(from.query.redirect.toString())
+        to.fullPath=decodeURIComponent(from.query.redirect.toString());
+        to.path=decodeURIComponent(from.query.redirect.toString());
     }
+    console.log(to);
+    
     // return {
     //     ...router.resolve(decodeURIComponent(redirectPath)),
     //     replace: true,

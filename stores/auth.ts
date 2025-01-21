@@ -71,6 +71,8 @@ export const useAuthStore = defineStore('auth', () => {
         //   });
         // }
       }
+    } catch(e){
+      console.log(e);
     } finally {
       loginLoading.value = false;
     }

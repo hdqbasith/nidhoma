@@ -96,8 +96,10 @@ const avatar = computed(() => {
   return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
 });
 
+const { logout } = useSanctumAuth()
 async function handleLogout() {
-  await authStore.logout(false);
+  // await authStore.logout(false);
+  logout()
 }
 
 function handleNoticeClear() {

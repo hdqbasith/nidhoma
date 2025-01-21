@@ -54,6 +54,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'VbenInput',
       componentProps: {
         placeholder: $t('authentication.usernameTip'),
+        autofocus: true,
       },
       dependencies: {
         trigger(values, form) {
