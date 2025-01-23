@@ -27,6 +27,7 @@ await initPreferences({
     },
   }),
 });
+const appConfig = useAppConfig()
 </script>
 <template>
 

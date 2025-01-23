@@ -18,8 +18,9 @@ export default defineNuxtRouteMiddleware(() => {
   }
 
   if (user.value?.email_verified_at !== null) {
+    
     return
   }
 
-  return navigateTo('/verify-email')
+  return navigateTo('/auth/verify-email')
 })

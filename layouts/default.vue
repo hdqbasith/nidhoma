@@ -17,6 +17,8 @@ import Notification from '~/components/layouts/widgets/notification/notification
 import { AuthenticationLoginExpiredModal } from '~/packages/effects/common-ui';
 import LockScreen from '~/components/layouts/widgets/lock-screen/lock-screen.vue';
 import { registerAccessDirective } from '~/packages/effects/access';
+import { generateAccess } from '~/packages/router/access';
+import { accessRoutes } from '~/packages/router/routes';
 
 
 const notifications = ref<NotificationItem[]>([
@@ -51,10 +53,35 @@ const notifications = ref<NotificationItem[]>([
 ]);
 
 const userStore = useUserStore();
-const authStore = useAuthStore();
 const accessStore = useAccessStore();
-if(!accessStore.isReady){
-  registerAccessDirective(useNuxtApp().vueApp)
+const client = useSanctumClient();
+
+const { data, pending, error, refresh, status } = await useAsyncData('users', () =>
+    client('/user')
+);
+refresh();
+client('/user').then((data) => {
+  console.log(data);
+});
+// console.log(data.value);
+
+if (!accessStore.isReady) {
+  registerAccessDirective(useNuxtApp().vueApp);
+
+  // useAccessStore().setAccessToken(useSanctumAuth<User>().user?.value?.tokens[0]);
+  // // 生成菜单和路由
+  // const user = useSanctumAuth<User>();
+  // const { accessibleMenus, accessibleRoutes } = await generateAccess({
+  //   roles: user.user.value!.roles!,
+  //   router: useRouter(),
+  //   // 则会在菜单中显示，但是访问会被重定向到403
+  //   routes: accessRoutes,
+  // });
+
+  // // 保存菜单信息和路由信息
+  // accessStore.setAccessMenus(accessibleMenus);
+  // accessStore.setAccessRoutes(accessibleRoutes);
+  // accessStore.setIsAccessChecked(true);
   accessStore.setIsReady()
 }
 const { destroyWatermark, updateWatermark } = useWatermark();
@@ -129,28 +156,15 @@ watch(
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
     <template #user-dropdown>
-      <UserDropdown
-        :avatar
-        :menus
-        :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
-        tag-text="Pro"
-        @logout="handleLogout"
-      />
+      <UserDropdown :avatar :menus :text="userStore.userInfo?.realName" description="ann.vben@gmail.com" tag-text="Pro"
+        @logout="handleLogout" />
     </template>
     <template #notification>
-      <Notification
-        :dot="showDot"
-        :notifications="notifications"
-        @clear="handleNoticeClear"
-        @make-all="handleMakeAll"
-      />
+      <Notification :dot="showDot" :notifications="notifications" @clear="handleNoticeClear"
+        @make-all="handleMakeAll" />
     </template>
     <template #extra>
-      <AuthenticationLoginExpiredModal
-        v-model:open="accessStore.loginExpired"
-        :avatar
-      >
+      <AuthenticationLoginExpiredModal v-model:open="accessStore.loginExpired" :avatar>
         <!-- <LoginForm /> -->
       </AuthenticationLoginExpiredModal>
     </template>

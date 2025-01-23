@@ -63,7 +63,10 @@ const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || '';
 
 const rememberMe = ref(!!localUsername);
 
-const { login,isAuthenticated,user } = useSanctumAuth()
+const { login,isAuthenticated,user } = useSanctumAuth<User>()
+const token =useSanctumAppConfig().tokenStorage?.get(useNuxtApp())
+console.log(token);
+
 const authstore = useAuthStore()
 async function handleSubmit() {
   // formApi.form.setErrors({
