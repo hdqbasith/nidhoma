@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { StudentMother } from '~/types/user/biodataSiswa';
 
 const router = useRouter();
 const setting = useSettingsStore()
@@ -35,11 +36,10 @@ const formSchema = toTypedSchema(z.object({
 }))
 const lanjut = ref(false)
 const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataIbu })
-const { refresh: saveData } = useFetch<any>("applicant/data-ibu", {
+const client = useSanctumClient();
+const saveData = () => client<StudentMother>("applicant/data-ibu", {
     method: "PATCH",
     body: values,
-    immediate: false,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 422) {
             toast.error('Gagal', {
@@ -50,14 +50,14 @@ const { refresh: saveData } = useFetch<any>("applicant/data-ibu", {
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) router.push("/applicant/ppdb/formulir/wali")
+            if (lanjut.value) biodata.stepIndex = 4;
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else router.push("/applicant/ppdb/formulir/wali")
+    else biodata.stepIndex = 4;
 })
 watch(
     () => biodata.dataIbu,
@@ -82,11 +82,9 @@ const prov = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
-const getwilayah = useFetch('applicant/wilayah', {
+const getwilayah = async () => await client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
-    immediate: true,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 200) {
             if (wilayah.target == 'prov') {
@@ -105,20 +103,20 @@ const updateWilayah = async () => {
     if (prov.value.length < 3) {
         wilayah.parent.parent = '0'
         wilayah.target = 'prov'
-        await getwilayah.refresh()
+        await getwilayah()
     }
     if (!meta.value.dirty && biodata.dataIbu.ik_propinsi) {
         wilayah.parent.parent = biodata.dataIbu.ik_propinsi
         wilayah.target = 'kab'
-        await getwilayah.refresh().then(() => {
+        await getwilayah().then(() => {
             if (biodata.dataIbu.ik_kabupaten) {
                 wilayah.parent.parent = biodata.dataIbu.ik_kabupaten
                 wilayah.target = 'kec'
-                getwilayah.refresh().then(() => {
+                getwilayah().then(() => {
                     if (biodata.dataIbu.ik_kecamatan) {
                         wilayah.parent.parent = biodata.dataIbu.ik_kecamatan
                         wilayah.target = 'kel'
-                        getwilayah.refresh().then(() => resetForm())
+                        getwilayah().then(() => resetForm())
                     }
                 })
             }
@@ -134,22 +132,24 @@ onMounted(() => {
     watch(() => values.ik_propinsi, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kab'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
+
             if (meta.value.dirty) kab.value.push({ key: values?.ik_kabupaten ?? '1', value: 'Pilih Ulang Kabupaten' })
+            console.log(meta.value);
         })
     })
     watch(() => values.ik_kabupaten, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kec'
-        getwilayah.refresh().then(() => {
-            if (meta.value.dirty) kec.value.push({ key: values?.ik_kecamatan ?? '1', value: 'Pilih Ulang Kecamatan' })
+        getwilayah().then(() => {
+            if (meta.value.dirty && values.ik_kecamatan) kec.value.push({ key: values?.ik_kecamatan ?? '1', value: 'Pilih Ulang Kecamatan' })
         })
     })
     watch(() => values.ik_kecamatan, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kel'
-        getwilayah.refresh().then(() => {
-            if (meta.value.dirty) kel.value.push({ key: values?.ik_kelurahan ?? '1', value: 'Pilih Ulang Desa/Kelurahan' })
+        getwilayah().then(() => {
+            if (meta.value.dirty && values.ik_kelurahan) kel.value.push({ key: values?.ik_kelurahan ?? '1', value: 'Pilih Ulang Desa/Kelurahan' })
         })
     })
     watchEffect(() => {
@@ -161,22 +161,22 @@ onMounted(() => {
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
         <CardHeader class="md:py-8 flex flex-row space-x-5">
-            <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
+            <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
-            </Button>
+            </Button> -->
             <div>
                 <CardTitle>Data Ibu Kandung</CardTitle>
                 <CardDescription>Isilah dengan lengkap sesuai dengan dokumen yang Anda miliki</CardDescription>
             </div>
         </CardHeader>
         <CardContent class="flex flex-col">
-            <form @submit.prevent="kirim()">
+            <form @submit.prevent="kirim()" key="dataibu">
                 <div class="md:grid md:grid-cols-2 space-y-6 md:space-y-0 md:gap-12 mt-5">
                     <div class="space-y-6">
                         <CardTitle>Data Ibu Kandung</CardTitle>
                         <FormInputSelect name="ik_status" :list="mhidup" :variant="setting.floatInput" />
                         <FormInputText name="ik_nama" :variant="setting.floatInput" />
-                        <div v-show="values.ik_status == '1'"class="space-y-6">
+                        <div v-show="values.ik_status == '1'" class="space-y-6">
                             <FormInputText name="ik_nik" :variant="setting.floatInput" type="number" />
                             <div class="flex flex-row gap-x-5">
                                 <FormInputText name="ik_tmplahir" :variant="setting.floatInput" />

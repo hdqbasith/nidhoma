@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { toast } from 'vue-sonner';
 import { z } from 'zod';
+import { useSanctumError } from '~/lib/useSanctumError';
 import { AuthenticationForgetPassword, type VbenFormSchema } from '~/packages/effects/common-ui';
 import { $t } from '~/packages/locales';
 import type { Recordable } from '~/packages/types';
@@ -33,9 +35,32 @@ const formSchema = computed((): VbenFormSchema[] => {
   ];
 });
 
-function handleSubmit(value: Recordable<any>) {
+async function handleSubmit(value: Recordable<any>) {
   // eslint-disable-next-line no-console
-  console.log('reset email:', value);
+  // console.log('reset email:', value);
+  const sanctumFetch = useSanctumClient();
+  loading.value = true;
+  try {
+    await sanctumFetch('/auth/forgot-password', {
+      method: 'POST',
+      body: value,
+    })
+
+    // await refreshIdentity()
+
+    navigateTo(useSanctumConfig().redirect.onGuestOnly || '/')
+    toast.success('Link reset password sudah dikirim ke e-mail Anda', {
+      duration: 10000,
+    })
+  } catch (error) {
+    const err = useSanctumError(error)
+    if (err.isValidationError) {
+      toast.error(err.bag[0].message)
+      // form.value?.setErrors(err.bag)
+    }
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

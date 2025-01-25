@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    middleware:['sanctum:verified']
+    middleware:['sanctum:verified'],
 })
 </script>
 <template>

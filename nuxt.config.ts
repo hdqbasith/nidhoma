@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   },
   sanctum: {
     userStateKey:'nidhoma',
-    baseUrl: 'http://127.0.0.1:80/api/v2', // Laravel API
+    baseUrl: 'http://localhost:80/api/v2', // Laravel API
     endpoints:{
       login:'/auth/login',
       user:'/user',
@@ -50,10 +50,12 @@ export default defineNuxtConfig({
     redirect:{
       onAuthOnly:'/auth/login',
       onLogin:'/dashboard',
-
+      onLogout:'/',
+      onGuestOnly:'/auth/login',
     },
     redirectIfAuthenticated:true,
     logLevel:3,
-    mode:'token'
+    mode:'token',
+
   },
 })

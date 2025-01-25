@@ -104,6 +104,7 @@ export function useTabbar() {
     () => {
       const meta = route.matched?.[route.matched.length - 1]?.meta;
       if (route.name) {
+        
         tabbarStore.addTab({
           ...route,
           meta: meta || route.meta,

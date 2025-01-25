@@ -3,18 +3,22 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Toaster } from 'vue-sonner';
 import { setupI18n } from './locales';
-import { defineOverridesPreferences, initPreferences } from './packages/preferences';
+import { defineOverridesPreferences, initPreferences, preferences, updatePreferences } from './packages/preferences';
+import { loadLocaleMessages } from './packages/locales';
+
 
 dayjs.extend(customParseFormat);
 const app = useNuxtApp().vueApp;
-await setupI18n(app, { defaultLocale: 'id-ID' });
+console.log(preferences.app.locale);
+await setupI18n(app,{defaultLocale:preferences.app.locale});
 const namespace = 'nidhoma';
 await initPreferences({
   namespace,
   overrides: defineOverridesPreferences({
     app: {
       name: 'Nidhoma',
-      accessMode:'backend'
+      accessMode:'backend',
+      locale:preferences.app.locale
     },
     breadcrumb:{
       showHome:true,
@@ -25,9 +29,12 @@ await initPreferences({
       companySiteLink:'https://hdqbasith.blogspot.com',
       date:'2025',
     },
+    theme:{
+      mode:'dark'
+    }
   }),
 });
-const appConfig = useAppConfig()
+await loadLocaleMessages(preferences.app.locale);
 </script>
 <template>
 

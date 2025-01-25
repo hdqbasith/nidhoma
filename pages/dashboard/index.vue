@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import { DashboardApplicant } from '#components';
 import { useAccessStore } from '~/packages/stores';
 definePageMeta({
     title:"page.dashboard.title",
     name:"Index"
 })
 
-const access=useAccessStore();
-
+const {user}=useSanctumAuth<User>();
+const role=user?.value?.roles?.[0].name;
 </script>
 <template>
      <div>
-          <div v-for="a in access.accessRoutes" class="flex flex-col">
-               {{a}}
-          </div>
-          <LandingFeaturesSection/>
+          <DashboardUser v-if="role=='user'"/>
+          <DashboardApplicant v-else-if="role=='applicant'"/>
+          <DashboardStudent v-else-if="role=='student'"/>
+          <DashboardAdmin v-else-if="role=='admin'"/>
      </div>
 </template>

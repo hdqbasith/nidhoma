@@ -9,7 +9,7 @@ import {
   stopProgress,
 } from '~/packages/@core/base/shared/utils';
 
-import { acceptHMRUpdate, defineStore } from 'pinia';
+// import { acceptHMRUpdate, defineStore } from 'pinia';
 
 interface TabbarState {
   /**

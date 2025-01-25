@@ -1,57 +1,53 @@
 <script lang="ts" setup>
 import { toast } from 'vue-sonner';
+import { useSanctumError } from '~/lib/useSanctumError';
+import { Alert, Form, FormField, Input, VbenButton } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { Recordable } from '~/packages/types';
 
 const form = ref();
-const auth = useAuthStore();
-
 const state = reactive({
   current_password: "",
   password: "",
   password_confirmation: "",
 });
 
-const { refresh: onSubmit, status: accountPasswordStatus } = useFetch<any>("account/password", {
-  method: "POST",
-  body: state,
-  immediate: false,
-  watch: false,
-  async onResponse({ response }) {
-    if (response?.status === 422) {
-      form.value.setErrors(response._data?.errors);
-    } else if (response._data?.ok) {
-      toast({
-        title: "The password was successfully updated.",
-      });
+const { user }=useSanctumAuth<User>();
+const loading = ref(false);
+async function handleSubmit(value: Recordable<any>) {
+  // eslint-disable-next-line no-console
+  // console.log('reset email:', value);
+  const sanctumFetch = useSanctumClient();
+  loading.value = true;
+  try {
+    await sanctumFetch('/auth/reset-password', {
+      method: 'POST',
+      body: value,
+    })
 
-      state.current_password = "";
-      state.password = "";
-      state.password_confirmation = "";
-    }
-  }
-});
+    // await refreshIdentity()
 
-const { refresh: sendResetPasswordEmail, status: resetPasswordEmailStatus } = useFetch<any>("verification-notification", {
-  method: "POST",
-  body: { email: auth.user.email },
-  immediate: false,
-  watch: false,
-  onResponse({ response }) {
-    if (response._data?.ok) {
-      toast({
-        title: "A link to reset your password has been sent to your email.",
-      });
+    navigateTo(useSanctumConfig().redirect.onGuestOnly || '/')
+    toast.success('Password sudah direset. Silakan gunakan password baru Anda', {
+      duration: 10000,
+    })
+  } catch (error) {
+    const err = useSanctumError(error)
+    if (err.isValidationError) {
+      toast.error(err.bag[0].message)
+      // form.value?.setErrors(err.bag)
     }
+  } finally {
+    loading.value = false;
   }
-});
+}
 </script>
 
 <template>
   <div>
     <Form
-      v-if="auth.user.has_password"
       ref="form"
       :state="state"
-      @submit="onSubmit"
+      @submit="handleSubmit"
       class="space-y-4"
     >
       <FormField label="Current Password" name="current_password" required>
@@ -77,11 +73,11 @@ const { refresh: sendResetPasswordEmail, status: resetPasswordEmailStatus } = us
       </FormField>
 
       <div class="pt-2">
-        <Button type="submit" label="Save" :loading="accountPasswordStatus === 'pending'" />
+        <VbenButton type="submit" label="Save" :loading="loading" />
       </div>
     </Form>
 
-    <Alert
+    <!-- <Alert
       v-else
       icon="i-heroicons-information-circle-20-solid"
       title="Send a link to your email to reset your password."
@@ -91,10 +87,10 @@ const { refresh: sendResetPasswordEmail, status: resetPasswordEmailStatus } = us
           label: 'Send link to Email',
           variant: 'solid',
           color: 'gray',
-          loading: resetPasswordEmailStatus === 'pending',
-          click: sendResetPasswordEmail,
+          loading: loading,
+          click: handleSubmit,
         },
       ]"
-    />
+    /> -->
   </div>
 </template>

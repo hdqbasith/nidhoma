@@ -24,7 +24,7 @@ export const useSanctumError = (error: unknown) => {
     toast.error('Anda sedang offline, mohon cek koneksi internet Anda');
   }
   const isValidationError
-        = isFetchError && error.response?.status === VALIDATION_ERROR_CODE
+        = isFetchError && error.response?.status
 
   const code = isFetchError ? error.response?.status : SERVER_ERROR_CODE
 

@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { StudentPersonal } from '~/types/user/biodataSiswa';
 
 const router = useRouter();
 const setting = useSettingsStore()
@@ -38,12 +39,10 @@ const formSchema = toTypedSchema(z.object({
 }))
 const lanjut = ref(false)
 const { handleSubmit, isSubmitting, meta, resetForm, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataPersonal })
-const { refresh } = useFetch<any>("applicant/data-personal", {
+const client = useSanctumClient();
+const saveData = () => client<StudentPersonal>("/applicant/data-personal", {
   method: "PATCH",
   body: values,
-  immediate: false,
-  lazy:true,
-  watch: false,
   async onResponse({ response }) {
     if (response.status === 422) {
       toast.error('Gagal', {
@@ -54,14 +53,14 @@ const { refresh } = useFetch<any>("applicant/data-personal", {
     else if (response.status === 200) {
       toast.success('Data disimpan');
       biodata.fetchBiodata()
-      if (lanjut.value) router.push("/applicant/ppdb/formulir/ayah")
+      if (lanjut.value) biodata.stepIndex=2
     }
     lanjut.value = false
   }
 });
 const kirim = handleSubmit(() => {
-  if (meta.value.dirty) refresh()
-  else router.push("/applicant/ppdb/formulir/ayah")
+  if (meta.value.dirty) saveData()
+  else biodata.stepIndex=2
 })
 const jmlSaudara = computed(() => {
   let sdr = [
@@ -105,9 +104,9 @@ onMounted(() => {
 <template>
   <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
     <CardHeader class="md:py-8 flex flex-row space-x-5">
-      <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
+      <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
         <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
-      </Button>
+      </Button> -->
       <div>
         <CardTitle>Data Pribadi Calon Siswa</CardTitle>
         <CardDescription>Isilah dengan lengkap sesuai dengan ijazah terakhir Anda</CardDescription>

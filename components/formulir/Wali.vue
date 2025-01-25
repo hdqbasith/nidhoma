@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { StudentGuardian } from '~/types/user/biodataSiswa';
 
 const router = useRouter();
 const setting = useSettingsStore()
@@ -37,11 +38,10 @@ const formSchema = toTypedSchema(z.object({
 }))
 const lanjut = ref(false)
 const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataWali })
-const { refresh: saveData } = useFetch<any>("applicant/data-wali", {
+const client = useSanctumClient();
+const saveData = async () => await client<StudentGuardian>("applicant/data-wali", {
     method: "PATCH",
     body: values,
-    immediate: false,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 422) {
             toast.error('Gagal', {
@@ -52,14 +52,14 @@ const { refresh: saveData } = useFetch<any>("applicant/data-wali", {
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) router.push("/applicant/ppdb/formulir/domisili")
+            if (lanjut.value) biodata.stepIndex=5
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else router.push("/applicant/ppdb/formulir/domisili")
+    else biodata.stepIndex =5
 })
 watch(
     () => biodata.dataWali,
@@ -84,11 +84,9 @@ const prov = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
-const getwilayah = useFetch('applicant/wilayah', {
+const getwilayah = async() => await client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
-    immediate: true,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 200) {
             if (wilayah.target == 'prov') {
@@ -107,20 +105,20 @@ const updateWilayah = async () => {
     if (prov.value.length < 3) {
         wilayah.parent.parent = '0'
         wilayah.target = 'prov'
-        await getwilayah.refresh()
+        await getwilayah()
     }
     if (!meta.value.dirty && biodata.dataWali.wali_propinsi) {
         wilayah.parent.parent = biodata.dataWali.wali_propinsi
         wilayah.target = 'kab'
-        await getwilayah.refresh().then(() => {
+        await getwilayah().then(() => {
             if (biodata.dataWali.wali_kabupaten) {
                 wilayah.parent.parent = biodata.dataWali.wali_kabupaten
                 wilayah.target = 'kec'
-                getwilayah.refresh().then(() => {
+                getwilayah().then(() => {
                     if (biodata.dataWali.wali_kecamatan) {
                         wilayah.parent.parent = biodata.dataWali.wali_kecamatan
                         wilayah.target = 'kel'
-                        getwilayah.refresh().then(() => resetForm())
+                        getwilayah().then(() => resetForm())
                     }
                 })
             }
@@ -136,21 +134,21 @@ onMounted(() => {
     watch(() => values.wali_propinsi, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kab'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kab.value.push({ key: values?.wali_kabupaten ?? '1', value: 'Pilih Ulang Kabupaten' })
         })
     })
     watch(() => values.wali_kabupaten, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kec'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kec.value.push({ key: values?.wali_kecamatan ?? '1', value: 'Pilih Ulang Kecamatan' })
         })
     })
     watch(() => values.wali_kecamatan, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kel'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kel.value.push({ key: values?.wali_kelurahan ?? '1', value: 'Pilih Ulang Desa/Kelurahan' })
         })
     })
@@ -163,9 +161,9 @@ onMounted(() => {
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
         <CardHeader class="md:py-8 flex flex-row space-x-5">
-            <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
+            <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
-            </Button>
+            </Button> -->
             <div>
                 <CardTitle>Data Wali (Yang membiayai sekolah)</CardTitle>
                 <CardDescription>Isilah dengan lengkap sesuai dengan dokumen yang Anda miliki</CardDescription>
@@ -177,7 +175,7 @@ onMounted(() => {
                     <div class="space-y-6">
                         <CardTitle>Data Wali</CardTitle>
                         <FormInputSelect name="wali_hubungan" :list="mhubwali" :variant="setting.floatInput" />
-                        <div class="space-y-6" v-show="values.wali_hubungan!='1'">
+                        <div class="space-y-6" v-show="values.wali_hubungan != '1'">
                             <FormInputText name="wali_nama" :variant="setting.floatInput" />
                             <FormInputText name="wali_nik" :variant="setting.floatInput" type="number" />
                             <div class="flex flex-row gap-x-5">
@@ -190,7 +188,7 @@ onMounted(() => {
                             <FormInputSelect name="wali_penghasilan" :list="mhasil" :variant="setting.floatInput" />
                         </div>
                     </div>
-                    <div class="space-y-6" v-show="values.wali_hubungan!='1'">
+                    <div class="space-y-6" v-show="values.wali_hubungan != '1'">
                         <CardTitle>Alamat Tempat Tinggal</CardTitle>
                         <FormInputSelect name="wali_tpt_tinggal" :list="tpt_tinggal_wali"
                             :variant="setting.floatInput" />

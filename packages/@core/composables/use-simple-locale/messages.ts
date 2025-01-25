@@ -10,12 +10,12 @@ export const messages: Record<Locale, Record<string, string>> = {
     submit: 'Submit',
   },
   'id-ID': {
-    cancel: '取消',
-    collapse: '收起',
-    confirm: '确认',
-    expand: '展开',
-    reset: '重置',
-    submit: '提交',
+    cancel: 'Batal',
+    collapse: 'Ciutkan',
+    confirm: 'Silakan',
+    expand: 'Lebarkan',
+    reset: 'Reset',
+    submit: 'Kirim',
   },
 };
 

@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { StudentFather } from '~/types/user/biodataSiswa';
 const auth = useAuthStore();
 const router = useRouter();
 const setting = useSettingsStore()
@@ -38,11 +39,10 @@ const formSchema = toTypedSchema(z.object({
 }))
 const lanjut = ref(false)
 const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataAyah })
-const { refresh: saveData } = useFetch<any>("applicant/data-ayah", {
+const client = useSanctumClient();
+const saveData = () => client<StudentFather>("/applicant/data-ayah", {
     method: "PATCH",
     body: values,
-    immediate: false,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 422) {
             toast.error('Gagal', {
@@ -53,14 +53,14 @@ const { refresh: saveData } = useFetch<any>("applicant/data-ayah", {
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) router.push("/applicant/ppdb/formulir/ibu")
+            if (lanjut.value) biodata.stepIndex=3
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else router.push("/applicant/ppdb/formulir/ibu")
+    else biodata.stepIndex=3
 })
 watch(
     () => biodata.dataAyah,
@@ -85,11 +85,10 @@ const prov = ref<wil[]>(provinsi)
 const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
-const getwilayah = useFetch('applicant/wilayah', {
+
+const getwilayah = async() => await client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
-    immediate: true,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 200) {
             if (wilayah.target == 'kab') {
@@ -101,20 +100,20 @@ const getwilayah = useFetch('applicant/wilayah', {
             }
         }
     }
-})
+});
 const updateWilayah = async () => {
     if (!meta.value.dirty && biodata.dataAyah.ak_propinsi) {
         wilayah.parent.parent = biodata.dataAyah.ak_propinsi
         wilayah.target = 'kab'
-        await getwilayah.refresh().then(() => {
+        await getwilayah().then(() => {
             if (biodata.dataAyah.ak_kabupaten) {
                 wilayah.parent.parent = biodata.dataAyah.ak_kabupaten
                 wilayah.target = 'kec'
-                getwilayah.refresh().then(() => {
+                getwilayah().then(() => {
                     if (biodata.dataAyah.ak_kecamatan) {
                         wilayah.parent.parent = biodata.dataAyah.ak_kecamatan
                         wilayah.target = 'kel'
-                        getwilayah.refresh().then(() => resetForm())
+                        getwilayah().then(() => resetForm())
                     }
                 })
             }
@@ -130,21 +129,21 @@ onMounted(() => {
     watch(() => values.ak_propinsi, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kab'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kab.value.push({ key: values?.ak_kabupaten ?? '1', value: 'Pilih Ulang Kabupaten' })
         })
     })
     watch(() => values.ak_kabupaten, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kec'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kec.value.push({ key: values?.ak_kecamatan ?? '1', value: 'Pilih Ulang Kecamatan' })
         })
     })
     watch(() => values.ak_kecamatan, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kel'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kel.value.push({ key: values?.ak_kelurahan ?? '1', value: 'Pilih Ulang Desa/Kelurahan' })
         })
     })
@@ -157,9 +156,9 @@ onMounted(() => {
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
         <CardHeader class="md:py-8 flex flex-row space-x-5">
-            <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
+            <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
-            </Button>
+            </Button> -->
             <div>
                 <CardTitle>Data Ayah Kandung</CardTitle>
                 <CardDescription>Isilah dengan lengkap sesuai dengan dokumen yang Anda miliki</CardDescription>

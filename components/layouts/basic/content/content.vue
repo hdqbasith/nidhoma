@@ -89,7 +89,7 @@ function transformComponent(
 <template>
   <div class="relative h-full">
     <!-- <Transition :name="getTransitionName()" appear mode="out-in"> -->
-      <NuxtPage class="p-5"/>
+      <NuxtPage class="p-2"/>
     <!-- </Transition> -->
     <!-- <IFrameRouterView /> -->
     <!-- <RouterView v-slot="{ Component, route }">

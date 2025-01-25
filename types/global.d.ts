@@ -67,15 +67,14 @@ declare global {
     }
 
     export interface Role {
-        // columns
-        id: string
-        name: string
-        guard_name: string
-        created_at: string | null
-        updated_at: string | null
-        // relations
-        permissions: Permission[]
-        users: User[]
+        // columns,
+        id: string | null,
+        name: string | null,
+        // guard_name: string,
+        // created_at: string | null,
+        // updated_at: string | null,
+        // relations,
+        permissions: Permission[],
     }
 
     export interface classroom {
@@ -99,7 +98,7 @@ declare global {
         id: string
         name: string
         email: string
-        email_verified_at: string | null
+        email_verified_at: Date | null
         password?: string | null
         two_factor_secret?: string | null
         two_factor_recovery_codes?: string | null
@@ -117,7 +116,7 @@ declare global {
         tokens: PersonalAccessToken[]
         connected_accounts: ConnectedAccount[]
         notifications: DatabaseNotification[]
-        roles: string[] | null
+        roles: Roles[] | null
         permissions: Permission[]
     }
     export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

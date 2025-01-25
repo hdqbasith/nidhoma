@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import type { StudentDomicile } from '~/types/user/biodataSiswa';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -36,7 +37,8 @@ const formSchema = toTypedSchema(z.object({
     m_transport: z.string().nullish(),
 }))
 const mpondok = ref<wil[]>()
-useFetch<wil[]>('/applicant/list-pondok', {
+const client = useSanctumClient();
+client<wil[]>('/applicant/list-pondok', {
     method: 'get',
     onResponse({ response }) {
         mpondok.value = response._data
@@ -45,11 +47,9 @@ useFetch<wil[]>('/applicant/list-pondok', {
 
 const lanjut = ref(false)
 const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataDomisili })
-const { refresh: saveData } = useFetch<any>("applicant/data-domisili", {
+const saveData = async () => await client<StudentDomicile>("applicant/data-domisili", {
     method: "PATCH",
     body: values,
-    immediate: false,
-    watch: false,
     async onResponse({ response }) {
         if (response.status === 422) {
             toast.error('Gagal', {
@@ -60,14 +60,14 @@ const { refresh: saveData } = useFetch<any>("applicant/data-domisili", {
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) router.push("/applicant/ppdb/formulir/asalsekolah")
+            if (lanjut.value) biodata.stepIndex = 6
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else router.push("/applicant/ppdb/formulir/asalsekolah")
+    else biodata.stepIndex = 6
 })
 watch(
     () => biodata.dataDomisili,
@@ -87,15 +87,14 @@ const wilayah = reactive({
 const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
-const getwilayah = useFetch('applicant/wilayah', {
+const getwilayah = () => client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
-    immediate: true,
-    watch: false,
     async onResponse({ response }) {
+        console.log(response);
         if (response.status === 200) {
             if (wilayah.target == 'kab') {
-                kab.value = response._data.filter((a:any)=>a.value=='Ka.Kudus')
+                kab.value = response._data.filter((a: any) => a.value == 'Kab. Kudus')
             } else if (wilayah.target == 'kec') {
                 kec.value = response._data
             } else if (wilayah.target == 'kel') {
@@ -108,15 +107,16 @@ const updateWilayah = async () => {
     if (!meta.value.dirty) {
         wilayah.parent.parent = '33'
         wilayah.target = 'kab'
-        await getwilayah.refresh().then(() => {
+        await getwilayah().then(() => {
+            
             if (biodata.dataDomisili.m_kabupaten) {
                 wilayah.parent.parent = biodata.dataDomisili.m_kabupaten
                 wilayah.target = 'kec'
-                getwilayah.refresh().then(() => {
+                getwilayah().then(() => {
                     if (biodata.dataDomisili.m_kecamatan) {
                         wilayah.parent.parent = biodata.dataDomisili.m_kecamatan
                         wilayah.target = 'kel'
-                        getwilayah.refresh().then(() => resetForm())
+                        getwilayah().then(() => resetForm())
                     }
                 })
             }
@@ -132,14 +132,14 @@ onMounted(() => {
     watch(() => values.m_kabupaten, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kec'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kec.value.push({ key: values?.m_kecamatan ?? '1', value: 'Pilih Ulang Kecamatan' })
         })
     })
     watch(() => values.m_kecamatan, (n, o) => {
         if (n) wilayah.parent.parent = n
         wilayah.target = 'kel'
-        getwilayah.refresh().then(() => {
+        getwilayah().then(() => {
             if (meta.value.dirty) kel.value.push({ key: values?.m_kelurahan ?? '1', value: 'Pilih Ulang Desa/Kelurahan' })
         })
     })
@@ -161,7 +161,7 @@ onMounted(() => {
             </div>
         </CardHeader>
         <CardContent class="flex flex-col">
-            <form @submit.prevent="kirim()">
+            <form @submit.prevent="kirim()" key="formDomicile">
                 <div class="md:grid md:grid-cols-2 space-y-6 md:space-y-0 md:gap-12 mt-5">
                     <div class="space-y-6">
                         <FormInputSelect name="m_tmp_tinggal" :list="mjenisrumah" :variant="setting.floatInput" />
@@ -169,8 +169,10 @@ onMounted(() => {
                             v-if="values.m_tmp_tinggal == '5'" />
                         <FormInputText name="m_pondok_nama" :variant="setting.floatInput"
                             v-if="values.m_pondok_kode == '99'" />
-                        <FormInputText name="m_pemilik" :variant="setting.floatInput" v-if="values.m_tmp_tinggal != '1'"/>
-                        <FormInputText name="m_hp_pemilik" :variant="setting.floatInput" v-if="values.m_tmp_tinggal != '1'"/>
+                        <FormInputText name="m_pemilik" :variant="setting.floatInput"
+                            v-if="values.m_tmp_tinggal != '1'" />
+                        <FormInputText name="m_hp_pemilik" :variant="setting.floatInput"
+                            v-if="values.m_tmp_tinggal != '1'" />
                         <FormInputSelect name="m_jarak" :list="mjarak" :variant="setting.floatInput" />
                         <FormInputSelect name="m_transport" :list="mtransport" :variant="setting.floatInput" />
                     </div>

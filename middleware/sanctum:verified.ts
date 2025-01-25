@@ -1,10 +1,7 @@
-// import type { User } from '~~/models/user'
-
-export default defineNuxtRouteMiddleware(() => {
+export default defineNuxtRouteMiddleware((to, from) => {
   const sanctumConfig = useSanctumConfig()
 
   const { isAuthenticated, user } = useSanctumAuth<User>()
-
   if (!isAuthenticated.value) {
     if (sanctumConfig.redirect.onAuthOnly === false) {
       return createError({
@@ -13,14 +10,17 @@ export default defineNuxtRouteMiddleware(() => {
         fatal: true,
       })
     }
-
     return navigateTo(sanctumConfig.redirect.onAuthOnly)
   }
-
+  
   if (user.value?.email_verified_at !== null) {
-    
+    console.log(user.value?.email_verified_at == null);
+    console.log(user.value?.email_verified_at === null);
     return
   }
 
-  return navigateTo('/auth/verify-email')
+  // return useNuxtApp().runWithContext(() => {
+    return navigateTo('/auth/verify-email')
+  // });
+  // return navigateTo('')
 })

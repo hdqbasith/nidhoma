@@ -10,7 +10,7 @@
   "password": "Password",
   "usernameTip": "Please enter username",
   "passwordErrorTip": "Password is incorrect",
-  "passwordTip": "Please enter password",
+  "passwordTip": "Please enter password 8 characters",
   "verifyRequiredTip": "Please complete the verification first",
   "rememberMe": "Remember Me",
   "createAnAccount": "Create an Account",
@@ -52,5 +52,7 @@
     "center": "Align Center",
     "alignLeft": "Align Left",
     "alignRight": "Align Right"
-  }
+  },
+  "resetPassword": "Reset Password",
+  "resetPasswordSubtitle": "Enter a new strong password"
 }

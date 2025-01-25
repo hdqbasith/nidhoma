@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 definePageMeta({
-  redirect: "/applicant/ppdb",
+  redirect: "/dashboard",
+  // name:'applicant'
 });
 </script>
 <template></template>

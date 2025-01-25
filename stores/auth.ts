@@ -142,23 +142,26 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout(redirect: boolean = true) {
-    try {
-      await logoutApi();
-    } catch {
-      // 不做任何处理
-    }
-    resetAllStores();
+    // try {
+    //   await logoutApi();
+    // } catch {
+    //   // 不做任何处理
+    // }
+    // resetAllStores();
     accessStore.setLoginExpired(false);
+    // accessStore.setIsReady(false);
+    userStore.setUserInfo(null);
+    accessStore.setAccessToken(null);
 
     // 回登录页带上当前路由地址
-    await router.replace({
-      path: LOGIN_PATH,
-      query: redirect
-        ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
-        : {},
-    });
+    // await router.replace({
+    //   path: LOGIN_PATH,
+    //   query: redirect
+    //     ? {
+    //         redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+    //       }
+    //     : {},
+    // });
   }
 
   async function fetchUserInfo() {

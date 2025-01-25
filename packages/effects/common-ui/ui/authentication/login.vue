@@ -15,6 +15,9 @@ import Title from './auth-title.vue';
 import ThirdPartyLogin from './third-party-login.vue';
 import { useAuthStore } from '~/stores/auth';
 import { useSanctumError } from '~/lib/useSanctumError';
+import { useAccessStore } from '~/packages/stores';
+import { toast } from 'vue-sonner';
+import appConfig from '~/app.config';
 interface Props extends AuthenticationProps {
   formSchema: VbenFormSchema[];
 }
@@ -63,18 +66,19 @@ const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || '';
 
 const rememberMe = ref(!!localUsername);
 
-const { login,isAuthenticated,user } = useSanctumAuth<User>()
-const token =useSanctumAppConfig().tokenStorage?.get(useNuxtApp())
-console.log(token);
+const { login, isAuthenticated } = useSanctumAuth<User>()
 
 const authstore = useAuthStore()
+const accessStore = useAccessStore()
+console.log(accessStore.accessToken);
+
 async function handleSubmit() {
   // formApi.form.setErrors({
   //   email:undefined,
   //   password:undefined
   // });
   // console.log('a');
-  
+
   const { valid } = await formApi.validate();
   const values = await formApi.getValues();
   if (valid) {
@@ -85,15 +89,12 @@ async function handleSubmit() {
     // emit('submit', values);
     // await authstore.authLogin(values)
     try {
-      await login(values)
-      console.log(isAuthenticated.value);
-      console.log(user.value);
-      
-      
-    }
-    catch (error) {
+      authstore.loginLoading = true;
+      await login(values);
+      toast.success('Login berhasil. Mengarahkan ke halaman beranda...');
+    } catch (error) {
       console.log(error);
-      
+
       const err = useSanctumError(error)
       // if (error instanceof FetchError && !error.response) {
       //   toast.error('Anda sedang offline, mohon cek koneksi internet Anda')
@@ -103,8 +104,11 @@ async function handleSubmit() {
         formApi.form.setErrors({
           [err.bag[0].path]: err.bag[0].message,
         })
+        toast.error(err.bag[0].message)
         // ?.setErrors(err.bag)
       }
+    } finally {
+      authstore.loginLoading = false;
     }
   }
 }

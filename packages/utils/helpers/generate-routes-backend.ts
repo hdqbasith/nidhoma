@@ -17,6 +17,7 @@ async function generateRoutesByBackend(
 
   try {
     const menuRoutes = await fetchMenuListAsync?.();
+    console.log('menuRoutes', menuRoutes);
     
     if (!menuRoutes) {
       return [];
@@ -42,6 +43,7 @@ function convertRoutes(
   layoutMap: ComponentRecordType,
   pageMap: ComponentRecordType,
 ): RouteRecordRaw[] {
+  
   return mapTree(routes, (node) => {
     const route = node as unknown as RouteRecordRaw;
     const { component, name } = node;

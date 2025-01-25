@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { toast } from 'vue-sonner';
 import { z } from 'zod';
+import { useSanctumError } from '~/lib/useSanctumError';
 import { requestClient } from '~/packages/api/request';
 import { AuthenticationRegister, type VbenFormSchema } from '~/packages/effects/common-ui';
 import { $t } from '~/packages/locales';
@@ -8,8 +10,7 @@ import type { Recordable } from '~/packages/types';
 defineOptions({ name: 'Register' });
 
 const loading = ref(false);
-const nuxtlink = resolveComponent('NuxtLink');
-const authStore = useAuthStore();
+// const authStore = useAuthStore();
 const formSchema = computed((): VbenFormSchema[] => {
   return [
     {
@@ -19,7 +20,7 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
       fieldName: 'email',
       label: $t('authentication.username'),
-      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
+      rules: z.string().min(8, { message: $t('authentication.usernameTip') }),
     },
     {
       component: 'VbenInputPassword',
@@ -34,7 +35,7 @@ const formSchema = computed((): VbenFormSchema[] => {
           strengthText: () => $t('authentication.passwordStrength'),
         };
       },
-      rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
+      rules: z.string().min(8, { message: $t('authentication.passwordTip') }),
     },
     {
       component: 'VbenInputPassword',
@@ -79,9 +80,32 @@ const formSchema = computed((): VbenFormSchema[] => {
     },
   ];
 });
+async function handleSubmit(value: Recordable<any>) {
+  // authStore.authRegister(value);
+  loading.value = true;
+  const sanctumFetch = useSanctumClient()
+  const { refreshIdentity } = useSanctumAuth()
+  try {
+    await sanctumFetch('/auth/register', {
+      method: 'POST',
+      body: value,
+    })
 
-function handleSubmit(value: Recordable<any>) {
-  authStore.authRegister(value);
+    // await refreshIdentity()
+
+    navigateTo(useSanctumConfig().redirect.onGuestOnly || '/')
+    toast.success('Pendaftaran berhasil. Silakan cek email Anda untuk verifikasi.', {
+      duration: 10000,
+    })
+  } catch (error) {
+    const err = useSanctumError(error)
+    if (err.isValidationError) {
+      toast.error(err.bag[0].message)
+      // form.value?.setErrors(err.bag)
+    }
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

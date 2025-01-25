@@ -19,6 +19,7 @@ import LockScreen from '~/components/layouts/widgets/lock-screen/lock-screen.vue
 import { registerAccessDirective } from '~/packages/effects/access';
 import { generateAccess } from '~/packages/router/access';
 import { accessRoutes } from '~/packages/router/routes';
+import appConfig from '~/app.config';
 
 
 const notifications = ref<NotificationItem[]>([
@@ -52,38 +53,27 @@ const notifications = ref<NotificationItem[]>([
   },
 ]);
 
-const userStore = useUserStore();
 const accessStore = useAccessStore();
-const client = useSanctumClient();
-
-const { data, pending, error, refresh, status } = await useAsyncData('users', () =>
-    client('/user')
-);
-refresh();
-client('/user').then((data) => {
-  console.log(data);
-});
-// console.log(data.value);
-
+const userStore = useUserStore();
 if (!accessStore.isReady) {
   registerAccessDirective(useNuxtApp().vueApp);
-
-  // useAccessStore().setAccessToken(useSanctumAuth<User>().user?.value?.tokens[0]);
-  // // 生成菜单和路由
-  // const user = useSanctumAuth<User>();
-  // const { accessibleMenus, accessibleRoutes } = await generateAccess({
-  //   roles: user.user.value!.roles!,
-  //   router: useRouter(),
-  //   // 则会在菜单中显示，但是访问会被重定向到403
-  //   routes: accessRoutes,
-  // });
-
-  // // 保存菜单信息和路由信息
-  // accessStore.setAccessMenus(accessibleMenus);
-  // accessStore.setAccessRoutes(accessibleRoutes);
-  // accessStore.setIsAccessChecked(true);
-  accessStore.setIsReady()
+  accessStore.setIsReady(true)
 }
+const token = await appConfig.sanctum.tokenStorage.get(useNuxtApp())
+accessStore.setAccessToken(token!);
+const userInfo = userStore.userInfo || (await useAuthStore().fetchUserInfo());
+const userRoles = userInfo.roles ?? [];
+const { accessibleMenus, accessibleRoutes } = await generateAccess({
+  roles: userRoles,
+  router: useRouter(),
+  routes: accessRoutes,
+});
+
+// 保存菜单信息和路由信息
+accessStore.setAccessMenus(accessibleMenus);
+accessStore.setAccessRoutes(accessibleRoutes);
+accessStore.setIsAccessChecked(true);
+
 const { destroyWatermark, updateWatermark } = useWatermark();
 const showDot = computed(() =>
   notifications.value.some((item) => !item.isRead),
@@ -125,7 +115,7 @@ const avatar = computed(() => {
 
 const { logout } = useSanctumAuth()
 async function handleLogout() {
-  // await authStore.logout(false);
+  await useAuthStore().logout(false);
   logout()
 }
 

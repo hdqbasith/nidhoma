@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from 'vue';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/packages/@core/ui-kit/shadcn-ui';
 import { cn } from '~/packages/utils';
-type list = {
+interface list {
     key: string
     value: string
 }

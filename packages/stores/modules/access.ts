@@ -1,7 +1,7 @@
 import type { MenuRecordRaw } from '~/packages/@core/base/typings';
 import type { RouteRecordRaw } from 'vue-router';
 
-import { acceptHMRUpdate, defineStore } from 'pinia';
+// import { acceptHMRUpdate, defineStore } from 'pinia';
 
 type AccessToken = null | string;
 
@@ -34,7 +34,7 @@ interface AccessState {
    * 登录 accessToken
    */
   refreshToken: AccessToken;
-  isReady:boolean
+  isReady: boolean
 }
 
 /**
@@ -82,8 +82,8 @@ export const useAccessStore = defineStore('core-access', {
     setRefreshToken(token: AccessToken) {
       this.refreshToken = token;
     },
-    setIsReady(){
-      this.isReady=true
+    setIsReady(bool: boolean) {
+      this.isReady = bool
     }
   },
   persist: {
@@ -98,7 +98,7 @@ export const useAccessStore = defineStore('core-access', {
     isAccessChecked: false,
     loginExpired: false,
     refreshToken: null,
-    isReady:false
+    isReady: false
   }),
 });
 
