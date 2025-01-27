@@ -44,7 +44,7 @@ preview.value=props.url;
 
                     <LoaderCircle v-if="loading" class="text-md mr-2 size-4 flex-shrink-0 animate-spin" />
                     <div v-else class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <img :src="preview"/>
+                        <NuxtImg :src="preview" class="max-h-48"/>
                         <!-- <svg v-else class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -80,6 +80,5 @@ const file = async (f:any) => {
     <div class="grid md:grid-cols-5 gap-3">
         <FormInputFile :loading="loading" @file="file" v-for="(b, i) in berkas" :key="b.nama"
             :nama="b.nama" :url="b.url" :jenis="b.jenis"></FormInputFile>
-            {{ berkas }}
     </div>
 </template>
