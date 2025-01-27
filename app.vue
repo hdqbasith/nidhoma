@@ -38,11 +38,11 @@ await loadLocaleMessages(preferences.app.locale);
 </script>
 <template>
 
-  <!-- <NuxtLayout> -->
+  <NuxtLayout name="blank">
   <div>
     <NuxtPage/>
   </div>
-  <!-- </NuxtLayout> -->
+  </NuxtLayout>
   <NuxtLoadingIndicator class="!opacity-100" :throttle="0" />
   <Toaster richColors :expand="true" closeButton position="top-right" />
 </template>

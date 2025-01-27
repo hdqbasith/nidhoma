@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     'nuxt-file-storage',
     'nuxt-auth-sanctum',
+    '@nuxt/image',
   ],
   tailwindcss: {
     configPath: '~/assets/css'
@@ -19,7 +20,8 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiBase: 'http://127.0.0.1',
+      apiBase: process.env.API_URL || 'http://localhost:80',
+      // apiBase: 'https://nidhoma.madrasahtbs.sch.id/jetstream',
       apiPrefix: '/api/v2'
     }
   },
@@ -30,7 +32,7 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: false,
       crossOriginOpenerPolicy: 'same-origin-allow-popups',
       contentSecurityPolicy: {
-        "img-src": ["'self'", "data:", "https://*", process.env.API_URL || 'http://127.0.0.1:*'],
+        "img-src": ["'self'", "data:", "blob:" , "https://*", process.env.API_URL || 'http://127.0.0.1:*','http://localhost:80'],
         'script-src': ["'self'", "'nonce-{{nonce}}'", "'strict-dynamic'"],
       },
     },
@@ -40,22 +42,23 @@ export default defineNuxtConfig({
     key: 'nidhoma-%id',
   },
   sanctum: {
-    userStateKey:'nidhoma',
+    userStateKey: 'nidhoma',
     baseUrl: 'http://localhost:80/api/v2', // Laravel API
-    endpoints:{
-      login:'/auth/login',
-      user:'/user',
-      logout:'/auth/logout',
+    // baseUrl: 'https://nidhoma.madrasahtbs.sch.id/jetstream/api/v2', // Laravel API
+    endpoints: {
+      login: '/auth/login',
+      user: '/user',
+      logout: '/auth/logout',
     },
-    redirect:{
-      onAuthOnly:'/auth/login',
-      onLogin:'/dashboard',
-      onLogout:'/',
-      onGuestOnly:'/auth/login',
+    redirect: {
+      onAuthOnly: '/auth/login',
+      onLogin: '/dashboard',
+      onLogout: '/',
+      onGuestOnly: '/auth/login',
     },
-    redirectIfAuthenticated:true,
-    logLevel:3,
-    mode:'token',
+    redirectIfAuthenticated: true,
+    logLevel: 3,
+    mode: 'token',
 
   },
 })

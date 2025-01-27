@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
       {
         name: 'Workspace',
         path: '/admin/index',
-        component: () => import('~/pages/admin/index.vue'),
+        component: () => import('~/pages/admin.vue'),
         meta: {
           icon: 'carbon:workspace',
           title: $t('page.dashboard.workspace'),
