@@ -187,7 +187,7 @@ export interface StudentGuardian extends Record<string, any> {
     wali_nama: string | null
     wali_nik: number | null
     wali_tmplahir: string | null
-    wali_tgllahir: Date | null
+    wali_tgllahir: string | null
     wali_hp: string | null
     wali_pendidikan: string | null
     wali_pekerjaan: string | null
@@ -245,6 +245,8 @@ export interface StudentPersonal extends Record<string, any> {
     s_citacita: string | null
     s_kk: number | null
     s_kepala_keluarga: string | null
+}
+export interface StudentAsalSekolah extends Record<string, any> {
     as_nama: string | null
     as_npsn: string | null
     as_propinsi: string | null
@@ -254,9 +256,6 @@ export interface StudentPersonal extends Record<string, any> {
     as_tahun_ajaran: string | null
     as_kelas_mts: string | null
     as_alamat: string | null
-    created_at: string | null
-    updated_at: string | null
-    deleted_at: string | null
 }
 export interface StudentBiodata {
     dataPersonal: StudentPersonal;

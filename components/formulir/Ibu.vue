@@ -179,8 +179,8 @@ onMounted(() => {
                         <div v-show="values.ik_status == '1'" class="space-y-6">
                             <FormInputText name="ik_nik" :variant="setting.floatInput" type="number" />
                             <div class="flex flex-row gap-x-5">
-                                <FormInputText name="ik_tmplahir" :variant="setting.floatInput" />
-                                <FormInputDate name="ik_tgllahir" :variant="setting.floatInput" />
+                                <FormInputText name="ik_tmplahir" :variant="setting.floatInput" class="w-1/2" />
+                                <FormInputDate name="ik_tgllahir" :variant="setting.floatInput" class="w-1/2" />
                             </div>
                             <FormInputText name="ik_hp" :variant="setting.floatInput" />
                             <FormInputSelect name="ik_pendidikan" :list="mpdd" :variant="setting.floatInput" />
@@ -197,8 +197,8 @@ onMounted(() => {
                             <FormInputSelect name="ik_kecamatan" :list="kec" :variant="setting.floatInput" />
                             <FormInputSelect name="ik_kelurahan" :list="kel" :variant="setting.floatInput" />
                             <div class="flex flex-row gap-x-5">
-                                <FormInputText name="ik_rt" :variant="setting.floatInput" type="number" />
-                                <FormInputText name="ik_rw" :variant="setting.floatInput" type="number" />
+                                <FormInputText name="ik_rt" :variant="setting.floatInput" type="number" class="w-1/2" />
+                                <FormInputText name="ik_rw" :variant="setting.floatInput" type="number" class="w-1/2" />
                             </div>
                             <FormInputText name="ik_kode_pos" :variant="setting.floatInput" type="number" />
                             <FormInputText name="ik_alamat" :variant="setting.floatInput" />

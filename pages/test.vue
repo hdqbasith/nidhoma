@@ -1,28 +1,31 @@
 <script lang="ts" setup>
 import type { MenuRecordRaw } from '~/packages/types';
 
-const client=useSanctumClient();
-const respons=ref();
-const cek=()=>client<MenuRecordRaw>('/menu/all',{
-  method:"GET",
-  onResponse({response}){
-    respons.value=response._data
-    console.log(response);
-    
+const client = useSanctumClient();
+const respons = ref();
+const cek = () => client<Blob>('/download/berkas', {
+  method: "GET",
+  query: {
+    jenis: "kk"
   },
-  onResponseError({error}){
-    respons.value=error
+  onResponse({ response }) {
+    respons.value = response._data
+    console.log(response);
+
+  },
+  onResponseError({ error }) {
+    respons.value = error
     console.log(error);
-    
+
   }
 })
 cek()
+
 </script>
 <template>
   <NuxtLayout name="blank">
     <div>
-      {{ respons }}
+      <img :src="respons">
     </div>
   </NuxtLayout>
 </template>
-

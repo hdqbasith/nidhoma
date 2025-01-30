@@ -152,9 +152,9 @@ onMounted(() => {
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
         <CardHeader class="md:py-8 flex flex-row space-x-5">
-            <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
+            <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
-            </Button>
+            </Button> -->
             <div>
                 <CardTitle>Tempat Tinggal</CardTitle>
                 <CardDescription>Isilah sesuai tempat tinggal Anda selama belajar di MA NU TBS Kudus</CardDescription>
@@ -168,7 +168,7 @@ onMounted(() => {
                         <FormInputSelect name="m_pondok_kode" :list="mpondok" :variant="setting.floatInput"
                             v-if="values.m_tmp_tinggal == '5'" />
                         <FormInputText name="m_pondok_nama" :variant="setting.floatInput"
-                            v-if="values.m_pondok_kode == '99'" />
+                            v-if="values.m_pondok_kode == '99' && values.m_tmp_tinggal == '5'" />
                         <FormInputText name="m_pemilik" :variant="setting.floatInput"
                             v-if="values.m_tmp_tinggal != '1'" />
                         <FormInputText name="m_hp_pemilik" :variant="setting.floatInput"

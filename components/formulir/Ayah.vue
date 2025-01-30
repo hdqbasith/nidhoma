@@ -53,14 +53,14 @@ const saveData = () => client<StudentFather>("/applicant/data-ayah", {
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) biodata.stepIndex=3
+            if (lanjut.value) biodata.stepIndex = 3
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else biodata.stepIndex=3
+    else biodata.stepIndex = 3
 })
 watch(
     () => biodata.dataAyah,
@@ -86,7 +86,7 @@ const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 
-const getwilayah = async() => await client<wil>('applicant/wilayah', {
+const getwilayah = async () => await client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
     async onResponse({ response }) {
@@ -176,8 +176,8 @@ onMounted(() => {
                             <FormInputText name="ak_nama_arab" :variant="setting.floatInput" />
                             <FormInputText name="ak_nik" :variant="setting.floatInput" type="number" />
                             <div class="flex flex-row gap-x-5">
-                                <FormInputText name="ak_tmplahir" :variant="setting.floatInput" />
-                                <FormInputDate name="ak_tgllahir" :variant="setting.floatInput" />
+                                <FormInputText name="ak_tmplahir" :variant="setting.floatInput" class="w-1/2" />
+                                <FormInputDate name="ak_tgllahir" :variant="setting.floatInput" class="w-1/2" />
                             </div>
                             <FormInputText name="ak_hp" :variant="setting.floatInput" />
                             <FormInputSelect name="ak_pendidikan" :list="mpdd" :variant="setting.floatInput" />
@@ -192,8 +192,8 @@ onMounted(() => {
                         <FormInputSelect name="ak_kecamatan" :list="kec" :variant="setting.floatInput" />
                         <FormInputSelect name="ak_kelurahan" :list="kel" :variant="setting.floatInput" />
                         <div class="flex flex-row gap-x-5">
-                            <FormInputText name="ak_rt" :variant="setting.floatInput" type="number" />
-                            <FormInputText name="ak_rw" :variant="setting.floatInput" type="number" />
+                            <FormInputText name="ak_rt" :variant="setting.floatInput" type="number" class="w-1/2" />
+                            <FormInputText name="ak_rw" :variant="setting.floatInput" type="number" class="w-1/2" />
                         </div>
                         <FormInputText name="ak_kode_pos" :variant="setting.floatInput" type="number" />
                         <FormInputText name="ak_alamat" :variant="setting.floatInput" />

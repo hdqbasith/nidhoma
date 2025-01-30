@@ -6,7 +6,7 @@ import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { useSanctumError } from '~/lib/useSanctumError';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Input } from '~/packages/@core/ui-kit/shadcn-ui';
-import type { Npsn, StudentPersonal } from '~/types/user/biodataSiswa';
+import type { Npsn, StudentAsalSekolah } from '~/types/user/biodataSiswa';
 
 const setting = useSettingsStore()
 const biodata = useStudentBiodataStore()
@@ -30,9 +30,9 @@ const formSchema = toTypedSchema(z.object({
     as_alamat: z.string().nullish(),
 }))
 const listSekolah = ref<wil[]>()
-const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataPersonal })
+const { handleSubmit, isSubmitting, meta, resetForm, setFieldValue, setErrors, values } = useForm({ validationSchema: formSchema, initialValues: biodata.dataAsalSekolah })
 const client = useSanctumClient();
-const saveData = async () => await client<StudentPersonal>("applicant/data-personal", {
+const saveData = async () => await client<StudentAsalSekolah>("applicant/data-personal", {
     method: "PATCH",
     body: values,
     async onResponse({ response }) {
@@ -84,12 +84,12 @@ const getNpsn = async () => await client<Npsn>('applicant/list-npsn', {
     toast.error('NPSN tidak ditemukan. Silakan isi manual')
     if (npsn.npsn) showForm.value = true
     manualNpsn.value = true
-    resetForm()
+    // resetForm()
     setFieldValue('as_npsn', npsn.npsn.toString())
     setFieldValue('as_tahun_ajaran', (new Date().getFullYear() - 1) + "-" + new Date().getFullYear())
 })
 watch(
-    () => biodata.dataPersonal,
+    () => biodata.dataAsalSekolah,
     (newValue, oldValue) => {
         if (newValue) {
             Object.entries(newValue).forEach(val => {
@@ -113,13 +113,15 @@ watch(
     }
 )
 onMounted(() => {
-    if (!biodata.dataPersonal?.s_akun) {
+    if (!biodata.dataAsalSekolah?.s_akun) {
         biodata.fetchBiodata()
     }
 })
 </script>
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
+        {{ meta.initialValues }}
+        {{ values }}
         <CardHeader class="md:py-8 flex flex-row space-x-5">
             <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>

@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_URL || 'http://localhost:80',
+      apiBase: process.env.API_URL || 'http://localhost:8000',
       // apiBase: 'https://nidhoma.madrasahtbs.sch.id/jetstream',
       apiPrefix: '/api/v2'
     }
@@ -32,7 +32,7 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: false,
       crossOriginOpenerPolicy: 'same-origin-allow-popups',
       contentSecurityPolicy: {
-        "img-src": ["'self'", "data:", "blob:" , "https://*", process.env.API_URL || 'http://127.0.0.1:*','http://localhost:80'],
+        "img-src": ["'self'", "data:", "blob:" , "https://*", process.env.API_URL || 'http://127.0.0.1:*','http://localhost:8000'],
         'script-src': ["'self'", "'nonce-{{nonce}}'", "'strict-dynamic'"],
       },
     },
@@ -43,7 +43,7 @@ export default defineNuxtConfig({
   },
   sanctum: {
     userStateKey: 'nidhoma',
-    baseUrl: 'http://localhost:80/api/v2', // Laravel API
+    baseUrl: 'http://localhost:8000/api/v2', // Laravel API
     // baseUrl: 'https://nidhoma.madrasahtbs.sch.id/jetstream/api/v2', // Laravel API
     endpoints: {
       login: '/auth/login',

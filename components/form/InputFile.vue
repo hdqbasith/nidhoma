@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import imageCompression from 'browser-image-compression';
-import { LoaderCircle } from 'lucide-vue-next';
-import { Card, CardContent, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import { Eye, HardDriveDownload, LoaderCircle, PenBox, Trash2 } from 'lucide-vue-next';
+import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
 interface Berkas {
     jenis: string,
     nama: string,
@@ -28,7 +28,6 @@ const ubah = async(e: any) => {
     });
     preview.value = URL.createObjectURL(file)
 }
-preview.value=props.url;
 </script>
 <template>
     <Card>
@@ -44,7 +43,7 @@ preview.value=props.url;
 
                     <LoaderCircle v-if="loading" class="text-md mr-2 size-4 flex-shrink-0 animate-spin" />
                     <div v-else class="flex flex-col items-center justify-center pt-5 pb-6">
-                        <NuxtImg :src="preview" class="max-h-48"/>
+                        <img :src="preview?? props.url" class="max-h-48"/>
                         <!-- <svg v-else class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -57,5 +56,15 @@ preview.value=props.url;
                 </label>
             </div>
         </CardContent>
+        <CardFooter class="grid grid-cols-3">
+            <a :href="props.url?? preview" target="_blank">
+                <Button variant="ghost">
+                    <Eye class="text-green-500"></Eye>
+                </Button>
+            </a>
+            <Button variant="ghost">
+                <Trash2 class="text-red-500"></Trash2>
+            </Button>
+        </CardFooter>
     </Card>
 </template>

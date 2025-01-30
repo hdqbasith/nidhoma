@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
 import { Boxes, Loader2, Save } from 'lucide-vue-next';
+import { log } from 'node:console';
 import { useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { z } from 'zod';
@@ -20,7 +21,7 @@ const formSchema = toTypedSchema(z.object({
     wali_nama: z.string().nullish(),
     wali_nik: z.number().nullish(),
     wali_tmplahir: z.string().nullish(),
-    wali_tgllahir: z.date().nullish(),
+    wali_tgllahir: z.string().nullish(),
     wali_hp: z.string().nullish(),
     wali_pendidikan: z.string().nullish(),
     wali_pekerjaan: z.string().nullish(),
@@ -52,14 +53,14 @@ const saveData = async () => await client<StudentGuardian>("applicant/data-wali"
         else if (response.status === 200) {
             toast.success('Data disimpan');
             biodata.fetchBiodata()
-            if (lanjut.value) biodata.stepIndex=5
+            if (lanjut.value) biodata.stepIndex = 5
         }
         lanjut.value = false
     }
 });
 const kirim = handleSubmit(async () => {
     if (meta.value.dirty) await saveData()
-    else biodata.stepIndex =5
+    else biodata.stepIndex = 5
 })
 watch(
     () => biodata.dataWali,
@@ -69,6 +70,7 @@ watch(
                 if (!val[1]) newValue[val[0]] = undefined
             })
             resetForm({ values: newValue })
+            
         }
     }
 )
@@ -84,7 +86,7 @@ const prov = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kab = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kec = ref<wil[]>([{ key: '0', value: 'Pilih' }])
 const kel = ref<wil[]>([{ key: '0', value: 'Pilih' }])
-const getwilayah = async() => await client<wil>('applicant/wilayah', {
+const getwilayah = async () => await client<wil>('applicant/wilayah', {
     params: wilayah.parent,
     method: "get",
     async onResponse({ response }) {
@@ -153,8 +155,9 @@ onMounted(() => {
         })
     })
     watchEffect(() => {
-        if (meta.value.dirty)
+        if (meta.value.dirty){
             setFieldValue('wali_alamat', (values.wali_kelurahan ? kel.value.find(x => x.key == values.wali_kelurahan)?.value : "") + " " + (values.wali_rt ? values.wali_rt?.toString().padStart(3, '0') + "/" : "") + (values.wali_rw ? values.wali_rw?.toString().padStart(3, '0') : "") + " " + (values.wali_kecamatan ? kec.value.find(x => x.key == values.wali_kecamatan)?.value : "") + " " + (values.wali_kabupaten ? kab.value.find(x => x.key == values.wali_kabupaten)?.value : "") + " " + (values.wali_kode_pos ?? "") + " " + (values.wali_propinsi ? prov.value.find(x => x.key == values.wali_propinsi)?.value : ""))
+        }
     })
 })
 </script>
@@ -179,8 +182,8 @@ onMounted(() => {
                             <FormInputText name="wali_nama" :variant="setting.floatInput" />
                             <FormInputText name="wali_nik" :variant="setting.floatInput" type="number" />
                             <div class="flex flex-row gap-x-5">
-                                <FormInputText name="wali_tmplahir" :variant="setting.floatInput" />
-                                <FormInputDate name="wali_tgllahir" :variant="setting.floatInput" />
+                                <FormInputText name="wali_tmplahir" :variant="setting.floatInput" class="w-1/2" />
+                                <FormInputDate name="wali_tgllahir" :variant="setting.floatInput" class="w-1/2" />
                             </div>
                             <FormInputText name="wali_hp" :variant="setting.floatInput" />
                             <FormInputSelect name="wali_pendidikan" :list="mpdd" :variant="setting.floatInput" />
@@ -201,7 +204,7 @@ onMounted(() => {
                             <FormInputText name="wali_rw" :variant="setting.floatInput" type="number" />
                             <FormInputText name="wali_kode_pos" :variant="setting.floatInput" type="number" />
                             <FormInputText name="wali_alamat" :variant="setting.floatInput" />
-                            <FormInputSelect name="wali_status_rumah" :list="mrumahstt" :variant="setting.floatInput" />
+                            <FormInputSelect name="wali_status_rumah" :list="mrumahstt" :variant="setting.floatInput"/>
                         </div>
                     </div>
                 </div>

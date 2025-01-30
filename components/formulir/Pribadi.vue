@@ -53,14 +53,14 @@ const saveData = () => client<StudentPersonal>("/applicant/data-personal", {
     else if (response.status === 200) {
       toast.success('Data disimpan');
       biodata.fetchBiodata()
-      if (lanjut.value) biodata.stepIndex=2
+      if (lanjut.value) biodata.stepIndex = 2
     }
     lanjut.value = false
   }
 });
 const kirim = handleSubmit(() => {
   if (meta.value.dirty) saveData()
-  else biodata.stepIndex=2
+  else biodata.stepIndex = 2
 })
 const jmlSaudara = computed(() => {
   let sdr = [
@@ -103,6 +103,7 @@ onMounted(() => {
 </script>
 <template>
   <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
+    {{ meta }}
     <CardHeader class="md:py-8 flex flex-row space-x-5">
       <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
         <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
@@ -121,17 +122,17 @@ onMounted(() => {
             <FormInputText name="s_nama_lengkap" :variant="setting.floatInput" />
             <FormInputText name="s_nama_arab" :variant="setting.floatInput" />
             <div class="flex flex-row gap-x-5">
-              <FormInputText name="s_tempat_lahir" :variant="setting.floatInput" />
-              <FormInputDate name="s_tanggal_lahir" :variant="setting.floatInput" />
+              <FormInputText name="s_tempat_lahir" :variant="setting.floatInput" class="w-1/2" />
+              <FormInputDate name="s_tanggal_lahir" :variant="setting.floatInput" class="w-1/2" />
             </div>
             <FormInputText name="s_nik" type="number" :variant="setting.floatInput" />
             <FormInputText name="s_kk" type="number" :variant="setting.floatInput" />
           </div>
           <div class="space-y-6">
             <FormInputText name="s_kepala_keluarga" :variant="setting.floatInput" />
-            <div class="flex flex-row items-end gap-x-5">
-              <FormInputText name="s_anak_ke" type="number" :variant="setting.floatInput" class="w-48" /> <span
-                class="pb-4">dari</span>
+            <div class="md:flex md:flex-row items-end gap-x-5">
+              <FormInputText name="s_anak_ke" type="number" :variant="setting.floatInput" class="w-full md:w-48" />
+              <span class="pb-4">dari</span>
               <FormInputSelect :list="jmlSaudara" name="s_jml_saudara" :variant="setting.floatInput"
                 placeholder="termasuk Anda" />
             </div>
