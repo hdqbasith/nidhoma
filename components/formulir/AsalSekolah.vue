@@ -120,8 +120,6 @@ onMounted(() => {
 </script>
 <template>
     <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
-        {{ meta.initialValues }}
-        {{ values }}
         <CardHeader class="md:py-8 flex flex-row space-x-5">
             <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
                 <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>
@@ -162,7 +160,7 @@ onMounted(() => {
                 </div>
                 <div class="grid grid-cols-3 mt-9">
                     <div></div>
-                    <Button variant="default" size="lg" :disabled="!meta.dirty || isSubmitting" type="submit">
+                    <Button variant="default" size="lg" type="submit">
                         <Loader2 class="w-4 h-4 mr-2 animate-spin" v-show="isSubmitting" />
                         <Save />&nbsp; Simpan
                     </Button>

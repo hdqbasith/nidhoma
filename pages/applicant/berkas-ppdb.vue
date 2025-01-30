@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { FormInputFile } from '#components';
+
+definePageMeta({
+  title: "Berkas PPDB",
+  name: "berkas-ppdb",
+})
 
 </script>
 <template>

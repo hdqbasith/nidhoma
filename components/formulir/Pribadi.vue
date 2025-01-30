@@ -103,7 +103,6 @@ onMounted(() => {
 </script>
 <template>
   <Card class="min-h-[calc(100vh-70px)] flex flex-col mx-6">
-    {{ meta }}
     <CardHeader class="md:py-8 flex flex-row space-x-5">
       <!-- <Button variant="default" class="flex flex-col h-14" @click="setting.toggleFloatInput()">
         <Boxes class="h-5" /><span class="text-xs">Ganti Tema</span>

@@ -61,4 +61,5 @@ export default defineNuxtConfig({
     mode: 'token',
 
   },
+  plugins:['~/plugins/VuePdfEmbed.client.js']
 })

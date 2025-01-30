@@ -2,10 +2,9 @@
 import imageCompression from 'browser-image-compression';
 import { LoaderCircle } from 'lucide-vue-next';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
-import VuePdfEmbed, { useVuePdfEmbed } from 'vue-pdf-embed'
-import { resolve } from 'path';
+import VuePdfEmbed, {useVuePdfEmbed} from 'vue-pdf-embed'
 import { toast } from 'vue-sonner';
-import { isNull } from 'lodash';
+const { doc } = useVuePdfEmbed({ source: null })
 interface Raport extends Record<string,any>{
     cover: any,
     identitas: any,
@@ -72,6 +71,7 @@ const ubah = (e: any) => {
     const file = e.target.files[0]
     if (file.type == "application/pdf") {
         pdf.value = URL.createObjectURL(file);
+        doc.value=file;
     } else {
         toast.error('File bukan PDF')
     }
@@ -166,6 +166,13 @@ const file = async (f: any) => {
         loading.value = false;
     });
 }
+
+onBeforeUnmount(()=>{
+    doc.value?.destroy();
+})
+//
+// Jangan lupa ganti file index.mjs baris 17360 if(a)
+//
 </script>
 <template>
     <Card>
@@ -197,5 +204,7 @@ const file = async (f: any) => {
             :url="raport[b.jenis]" :jenis="b.jenis" class="m-3"></FormInputFile>
         </CardContent>
     </Card>
-    <VuePdfEmbed :source="pdf" @loaded="cek" :page="1" ref="tes" class="hidden" />
+    <ClientOnly>
+        <VuePdfEmbed :source="doc" @loaded="cek" :page="1" ref="tes" class="hidden" />
+    </ClientOnly>
 </template>
