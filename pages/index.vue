@@ -5,7 +5,7 @@
 
         <LandingHeaderSection />
         <LandingHeroSection />
-        <LandingSponserSection />
+        <!-- <LandingSponserSection />
         <LandingAboutSection />
         <LandingHIWSection />
         <LandingFeaturesSection />
@@ -16,6 +16,6 @@
         <LandingPricingSection />
         <LandingNewsletterSection />
         <LandingFAQSection />
-        <LandingFooterSection />
+        <LandingFooterSection /> -->
     </NuxtLayout>
 </template>

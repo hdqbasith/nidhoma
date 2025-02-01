@@ -20,7 +20,8 @@ import { ref } from 'vue'
 import type { Post } from '../data/schema'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
-import { valueUpdater } from '@/lib/utils'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/packages/@core/ui-kit/shadcn-ui/ui/table'
+import { valueUpdater } from '~/plugins/vue-query'
 
 interface DataTableProps {
   columns: ColumnDef<Post, any>[]

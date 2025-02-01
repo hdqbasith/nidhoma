@@ -2,7 +2,7 @@
 import { toast } from 'vue-sonner';
 import type { ColumnDef } from '@tanstack/vue-table';
 import DataTableColumnHeader from '../table/applicant/DataTableColumnHeader.vue';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox } from '~/packages/@core/ui-kit/shadcn-ui';
 
 const actions = ref({
     edit: false,
@@ -70,9 +70,9 @@ const columns: ColumnDef<any>[] = [
         cell: ({ row }) => {
             return h('div', {},
                 [
-                    h('a', { href: '/admin/applicants/edit?akun=' + row.original.p_customer, target:'_blank' , 'v-show': actions.value.edit }, h(Button, { variant: 'blue' }, () => 'biodata')),
-                    h(Button, { variant: 'blue' }, () => 'bayar'),
-                    h(Button, { variant: 'red' }, () => 'hapus'),
+                    h('a', { href: '/admin/applicants/edit?akun=' + row.original.p_customer, target:'_blank' , 'v-show': actions.value.edit }, h(Button, { variant: 'default' }, () => 'biodata')),
+                    h(Button, { variant: 'default' }, () => 'bayar'),
+                    h(Button, { variant: 'destructive' }, () => 'hapus'),
                 ]
 
             )
@@ -80,7 +80,7 @@ const columns: ColumnDef<any>[] = [
     },
 ]
 
-const getList = await useFetch(
+const getList = await useFetch<any[]>(
     () => 'admin/list-payment/2',
     {
         method: "get",
@@ -102,7 +102,7 @@ getList.refresh()
             <CardDescription>dari MTs TBS</CardDescription>
         </CardHeader>
         <CardContent>
-            <TableApplicantDataTable :data="getList.data.value" :columns="columns" />
+            <TableApplicantDataTable :data="getList.data.value!" :columns="columns" />
         </CardContent>
         <CardFooter>
 

@@ -5,7 +5,7 @@ import type { StudentAsalSekolah, StudentBiodata, StudentDomicile, StudentFather
 
 export const useStudentBiodataStore = defineStore('studentBiodata', () => {
   const studentId = ref();
-  const stepIndex=ref(1);
+  const stepIndex = ref(1);
   const dataPersonal = ref<StudentPersonal>();
   const dataAyah = ref(<StudentFather>{});
   const dataIbu = ref(<StudentMother>{});
@@ -15,6 +15,7 @@ export const useStudentBiodataStore = defineStore('studentBiodata', () => {
   const client = useSanctumClient();
   const fetchBiodata = () => client<StudentBiodata>('/applicant/biodata', {
     method: 'GET',
+    query: studentId.value ? { applicant: studentId.value } : {},
     onResponse({ response }) {
       if (response.status === 200) {
         dataPersonal.value = response._data.dataPersonal;
@@ -24,7 +25,7 @@ export const useStudentBiodataStore = defineStore('studentBiodata', () => {
         dataDomisili.value = response._data.dataDomisili;
         dataAsalSekolah.value = response._data.dataPersonal;
         console.log(response._data);
-        
+
       }
     }
   }).catch((error) => {

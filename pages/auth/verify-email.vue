@@ -42,7 +42,7 @@ const toaster = async () => {
       <div class="flex justify-between items-center mt-5">
         <ResendNotificationButton />
 
-        <NuxtLink class="underline underline-offset-2 text-gray-500" @click="toaster">
+        <NuxtLink class="underline underline-offset-2 text-gray-500 w-fit" @click="toaster">
           <Button variant="ghost">
             Sudah Verifikasi
           </Button>

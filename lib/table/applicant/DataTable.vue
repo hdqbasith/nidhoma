@@ -19,6 +19,8 @@ import {
 import { ref } from 'vue'
 import DataTablePagination from './DataTablePagination.vue'
 import DataTableToolbar from './DataTableToolbar.vue'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/packages/@core/ui-kit/shadcn-ui/ui/table'
+import { valueUpdater } from '~/plugins/vue-query'
 
 interface DataTableProps {
   columns: ColumnDef<any, any>[]

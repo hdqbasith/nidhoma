@@ -79,7 +79,9 @@ const ubah = (e: any) => {
 const tes = useTemplateRef('tes');
 const client = useSanctumClient();
 const form = new FormData;
+const applicant =  useStudentBiodataStore().studentId;
 form.append('jenis', 'raport');
+form.append('applicant', applicant);
 const upload = () => {
     client('upload/raport', {
         method: 'POST',
@@ -146,6 +148,9 @@ const cek = async (e: any) => {
 onMounted(() => {
     const getRaport = () => client<Raport>('/download/raport', {
         method: 'GET',
+        query:{
+          applicant:applicant
+        }
     })
     getRaport().then((data) => {
         raport.value = data
@@ -155,7 +160,8 @@ const loading = ref(false)
 const file = async (f: any) => {
     loading.value = true;
     form.append('jenis', f.jenis);
-    form.append('file', f.file);
+    form.append(f.jenis, f.file);
+    form.append('applicant', applicant);
     await client('/upload/raport', {
         method: 'POST',
         body: form,
@@ -193,7 +199,7 @@ onBeforeUnmount(()=>{
         <CardContent class="md:grid md:grid-cols-4">
             <div class="flex items-center justify-center w-full">
                 <label for="raport"
-                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                     <div class="border border-gray-500 rounded-sm p-5">
                         Upload PDF (7 halaman)
                     </div>

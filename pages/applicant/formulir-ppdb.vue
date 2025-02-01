@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { LucideBuilding, LucideHome, LucideUserCircle, LucideUserRoundCog, LucideUsers, LucideUserSquare2 } from 'lucide-vue-next';
-import Back from '~/components/ui/back/Back.vue';
 import { Badge, Card } from '~/packages/@core/ui-kit/shadcn-ui';
 import { Stepper, StepperDescription, StepperIndicator, StepperItem, StepperSeparator, StepperTitle, StepperTrigger } from '~/packages/@core/ui-kit/shadcn-ui/ui/stepper';
 
@@ -10,6 +9,11 @@ definePageMeta({
   name: "formulir-ppdb",
 })
 
+const applicant = (useRoute().query.akun?? '') as string;
+const studentStore = useStudentBiodataStore();
+if (applicant) {
+  studentStore.studentId = applicant;
+}
 const steps = [{
   step: 1,
   title: 'Personal',

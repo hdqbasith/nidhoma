@@ -33,11 +33,13 @@ const ubah = async(e: any) => {
 }
 const client=useSanctumClient();
 const showConfirm=ref(false);
+const applicant =  useStudentBiodataStore().studentId;
 const hapus=()=>{
     client('/delete/berkas',{
         method:"DELETE",
         query:{
-            jenis:props.jenis
+            jenis:props.jenis,
+            applicant:applicant
         },
         onResponse({response}){
             toast.success("Berkas sudah dihapus. Silakan upload lagi...");

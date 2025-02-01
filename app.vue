@@ -31,6 +31,9 @@ await initPreferences({
     },
     theme:{
       mode:'dark'
+    },
+    widget:{
+      refresh:false
     }
   }),
 });

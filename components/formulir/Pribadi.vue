@@ -6,6 +6,7 @@ import { toast } from 'vue-sonner';
 import { z } from 'zod';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/packages/@core/ui-kit/shadcn-ui';
 import type { StudentPersonal } from '~/types/user/biodataSiswa';
+import Student from '../dashboard/student.vue';
 
 const router = useRouter();
 const setting = useSettingsStore()
@@ -42,7 +43,10 @@ const { handleSubmit, isSubmitting, meta, resetForm, setErrors, values } = useFo
 const client = useSanctumClient();
 const saveData = () => client<StudentPersonal>("/applicant/data-personal", {
   method: "PATCH",
-  body: values,
+  body: {
+    ...values,
+    s_akun:biodata.studentId
+  },
   async onResponse({ response }) {
     if (response.status === 422) {
       toast.error('Gagal', {

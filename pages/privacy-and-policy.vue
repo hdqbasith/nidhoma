@@ -8,7 +8,7 @@ definePageMeta({
 </script>
 <template>
     <div class="p-10">
-        <NuxtLink to="/auth/register" class="-ms-3">
+        <NuxtLink to="/auth/register" class="-ms-3 w-fit">
             <Button size="lg" class="rounded-full" variant="secondary">
 
                 <ArrowBigLeft/>
