@@ -36,7 +36,7 @@ const saveData = async () => await client<StudentAsalSekolah>("applicant/data-pe
   method: "PATCH",
   body: {
     ...values,
-    s_akun: biodata.studentId
+    applicant: biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {

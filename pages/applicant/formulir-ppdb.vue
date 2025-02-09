@@ -9,7 +9,7 @@ definePageMeta({
   name: "formulir-ppdb",
 })
 
-const applicant = (useRoute().query.akun?? '') as string;
+const applicant = (useRoute().query?.akun?? '') as string;
 const studentStore = useStudentBiodataStore();
 if (applicant) {
   studentStore.studentId = applicant;
@@ -68,11 +68,11 @@ const biodata=useStudentBiodataStore();
       </StepperItem>
     </Stepper>
 
-    <FormulirPribadi v-if="biodata.stepIndex==1"></FormulirPribadi>
-    <FormulirAyah v-else-if="biodata.stepIndex==2"></FormulirAyah>
-    <FormulirIbu v-else-if="biodata.stepIndex==3"></FormulirIbu>
-    <FormulirWali v-else-if="biodata.stepIndex==4"></FormulirWali>
-    <FormulirDomisili v-else-if="biodata.stepIndex==5"></FormulirDomisili>
-    <FormulirAsalSekolah v-else-if="biodata.stepIndex==6"></FormulirAsalSekolah>
+    <FormulirDPribadi v-if="biodata.stepIndex==1"></FormulirDPribadi>
+    <FormulirDAyah v-else-if="biodata.stepIndex==2"></FormulirDAyah>
+    <FormulirDIbu v-else-if="biodata.stepIndex==3"></FormulirDIbu>
+    <FormulirDWali v-else-if="biodata.stepIndex==4"></FormulirDWali>
+    <FormulirDDomisili v-else-if="biodata.stepIndex==5"></FormulirDDomisili>
+    <FormulirDAsalSekolah v-else-if="biodata.stepIndex==6"></FormulirDAsalSekolah>
   </Card>
 </template>

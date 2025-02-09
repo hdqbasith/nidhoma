@@ -41,7 +41,7 @@ const saveData = () => client<StudentMother>("applicant/data-ibu", {
   method: "PATCH",
   body: {
     ...values,
-    ik_akun: biodata.studentId
+    applicant: biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {

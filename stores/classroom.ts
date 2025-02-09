@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useClassroomStore = defineStore('classroom', () => {
   const data = ref<classroom[]>();
-  const values = ref();
+  const values = ref<classroom>();
 
   const menu10 = <DotThree[]>[
     {
@@ -47,25 +47,22 @@ export const useClassroomStore = defineStore('classroom', () => {
       action: 'tambahSiswa'
     }
   ]
-  const { refresh } = useFetch<classroom>(
+  const client = useSanctumClient();
+  const refresh = async() => await client<classroom>(
     'admin/classroom/list',
     {
       method: 'get',
-      immediate: false,
-      watch: false,
       onResponse({ response }) {
         if (response.status === 200) {
           data.value = response._data
         }
       },
     });
-  const { refresh: addClassroom } = useFetch(
+  const addClassroom = () => client(
     'admin/classroom/new-single',
     {
       method: 'post',
-      body: values,
-      immediate: false,
-      watch: false,
+      body: values.value,
       onResponse({ response }) {
         if (response.status === 201) {
           refresh();
@@ -73,14 +70,15 @@ export const useClassroomStore = defineStore('classroom', () => {
       }
     }
   )
-  const { refresh: editClassroom } = useFetch(
+  const editClassroom = () => client(
     'admin/classroom/edit',
     {
       method: 'post',
-      body: values,
-      immediate: false,
-      watch: false,
+      body: values.value,
       onResponse({ response }) {
+        console.log(values.value);
+        console.log(response);
+        
         if (response.status === 200) {
           refresh();
         }
@@ -88,13 +86,11 @@ export const useClassroomStore = defineStore('classroom', () => {
       }
     }
   )
-  const { refresh: deleteClassroom } = useFetch(
+  const deleteClassroom = () => client(
     'admin/classroom/delete',
     {
       method: 'post',
-      body: values,
-      immediate: false,
-      watch: false,
+      body: values.value,
       onResponse({ response }) {
         if (response.status === 200) {
           refresh();
@@ -103,19 +99,17 @@ export const useClassroomStore = defineStore('classroom', () => {
       }
     }
   )
-  const { refresh: importClassroom } = useFetch(
+  const importClassroom = () => client(
     'admin/classroom/import',
     {
       method: 'post',
-      body: values,
-      immediate: false,
-      watch: false,
+      body: values.value,
       onResponse({ response }) {
         if (response.status === 200) {
           refresh();
           showModalImport.value = false;
         }
-              }
+      }
     }
   )
   const showModalEdit = ref(false);

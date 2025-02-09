@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
-import { z } from 'zod'
-import { useUserStore } from '~/packages/stores'
 
-const { handleFileInput, files } = useFileStorage({ clearOldFiles: true })
 const client = useSanctumClient()
 
 interface Berkas {

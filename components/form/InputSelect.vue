@@ -78,14 +78,14 @@ const autoLabel = <Record<string, string>>{
             <FormLabel v-if="!variant || variant == 'normal'">{{ autoLabel[name ?? 'Kasih name input'] }}</FormLabel>
             <Select v-bind="componentField">
                 <FormControl>
-                    <SelectTrigger :class="floatClass">
+                    <SelectTrigger :class="floatClass" >
                         <SelectValue :placeholder="placeholder" />
                     </SelectTrigger>
                 </FormControl>
                 <FormLabel v-if="variant == 'float' || variant == 'outline'"
                     class="absolute bg-card p-1 ms-1 duration-300 transform -translate-y-8 scale-90 top-3 origin-[0] peer-focus:start-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1 peer-focus:scale-90 peer-focus:-translate-y-8 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">
                     {{ autoLabel[name ?? 'Kasih name input'] }}</FormLabel>
-                <SelectContent>
+                <SelectContent :body-lock="false">
                     <SelectGroup>
                         <SelectItem v-for="l in list" :value="l.key">
                             {{ l.value }}
@@ -101,7 +101,7 @@ const autoLabel = <Record<string, string>>{
 </template>
 
 <style>
-html body {
+/* html body {
     overflow: auto !important;
-}
+} */
 </style>

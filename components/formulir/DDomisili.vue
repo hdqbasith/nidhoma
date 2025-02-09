@@ -51,7 +51,7 @@ const saveData = async () => await client<StudentDomicile>("applicant/data-domis
   method: "PATCH",
   body: {
     ...values,
-    m_akun: biodata.studentId
+    applicant: biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {

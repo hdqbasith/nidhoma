@@ -8,7 +8,7 @@ import { Check, PlusCircle } from 'lucide-vue-next'
 import type { StudentPersonal } from '~/types/user/biodataSiswa'
 import { Badge, Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, Popover, PopoverContent, PopoverTrigger, Separator } from '~/packages/@core/ui-kit/shadcn-ui'
 
-interface DataTableFacetedFilter {
+interface DataTableFacetedFilter{
   column?: Column<StudentPersonal, any>
   title?: string
   options: {
@@ -64,7 +64,7 @@ const selectedValues = computed(() => new Set(props.column?.getFilterValue() as 
     </PopoverTrigger>
     <PopoverContent class="w-[200px] p-0" align="start">
       <Command
-        :filter-function="(list: DataTableFacetedFilter['options'], term: string) => list.filter(i => i.label.toLowerCase()?.includes(term)) "
+        :filter-function="(list: DataTableFacetedFilter['options'] , term) => list.filter(i => i.label.toLowerCase()?.includes(term)) "
       >
       {{ 'coba lihat apa yang terjaddi' }}
         <CommandInput :placeholder="title" />

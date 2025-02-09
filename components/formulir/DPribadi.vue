@@ -45,7 +45,7 @@ const saveData = () => client<StudentPersonal>("/applicant/data-personal", {
   method: "PATCH",
   body: {
     ...values,
-    s_akun:biodata.studentId
+    applicant:biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {

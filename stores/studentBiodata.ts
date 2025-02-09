@@ -4,7 +4,7 @@ import { useSanctumError } from '~/lib/useSanctumError';
 import type { StudentAsalSekolah, StudentBiodata, StudentDomicile, StudentFather, StudentGuardian, StudentMother, StudentPersonal } from '~/types/user/biodataSiswa';
 
 export const useStudentBiodataStore = defineStore('studentBiodata', () => {
-  const studentId = ref();
+  const studentId = ref('');
   const stepIndex = ref(1);
   const dataPersonal = ref<StudentPersonal>();
   const dataAyah = ref(<StudentFather>{});

@@ -28,14 +28,14 @@ import WaCs from '../info/wa-cs.vue';
               <li>
                 Melunasi infaq pendaftaran sebesar Rp 250.000,- melalui rekening BRI <b class="font-extrabold">0038-01-001773-56-4</b> atas nama PPDB MA NU TBS KUDUS
               </li>
-              <li>
+              <!-- <li>
                 Upload Bukti pembayaran
                 <NuxtLink to='/applicant/upload-bukti-pembayaran' class="flex my-2 w-fit">
                   <Button>
                     Upload Bukti Pembayaran
                   </Button>
                 </NuxtLink>
-              </li>
+              </li> -->
               <li>
                 Hubungi 
                 <WaCs></WaCs>

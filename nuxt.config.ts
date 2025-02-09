@@ -20,8 +20,8 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      // apiBase: process.env.API_URL || 'http://localhost:8000',
-      apiBase: 'https://nidhoma.madrasahtbs.sch.id/jetstream',
+      apiBase: process.env.API_URL || 'http://localhost:8000',
+      // apiBase: 'https://nidhoma.madrasahtbs.sch.id/jetstream',
       apiPrefix: '/api/v2'
     }
   },
@@ -43,8 +43,8 @@ export default defineNuxtConfig({
   },
   sanctum: {
     userStateKey: 'nidhoma',
-    // baseUrl: 'http://localhost:8000/api/v2', // Laravel API
-    baseUrl: 'https://nidhoma.madrasahtbs.sch.id/jetstream/api/v2', // Laravel API
+    baseUrl: 'http://localhost:8000/api/v2', // Laravel API
+    // baseUrl: 'https://nidhoma.madrasahtbs.sch.id/jetstream/api/v2', // Laravel API
     endpoints: {
       login: '/auth/login',
       user: '/user',

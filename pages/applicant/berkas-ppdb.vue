@@ -5,7 +5,7 @@ definePageMeta({
   name: "berkas-ppdb",
 })
 
-const applicant = (useRoute().query.akun?? '') as string;
+const applicant = (useRoute().query?.akun?? '') as string;
 const studentStore = useStudentBiodataStore();
 if (applicant) {
   studentStore.studentId = applicant;

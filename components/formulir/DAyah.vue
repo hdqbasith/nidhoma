@@ -44,7 +44,7 @@ const saveData = () => client<StudentFather>("/applicant/data-ayah", {
   method: "PATCH",
   body: {
     ...values,
-    ak_akun: biodata.studentId
+    applicant: biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {

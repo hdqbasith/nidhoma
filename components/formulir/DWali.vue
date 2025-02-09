@@ -44,7 +44,7 @@ const saveData = async () => await client<StudentGuardian>("applicant/data-wali"
   method: "PATCH",
   body: {
     ...values,
-    wali_akun: biodata.studentId
+    applicant: biodata.studentId
   },
   async onResponse({ response }) {
     if (response.status === 422) {
