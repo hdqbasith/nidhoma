@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import type { Recordable } from '~/packages/types';
-import type { VbenFormSchema } from '~/packages/@core/ui-kit/form-ui';
+import type { Recordable } from "~/packages/types";
+import type { VbenFormSchema } from "~/packages/@core/ui-kit/form-ui";
 
-import type { AuthenticationProps } from './types';
+import type { AuthenticationProps } from "./types";
 
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
-import { $t } from '~/packages/locales';
-import { useVbenForm } from '~/packages/@core/ui-kit/form-ui';
-import { VbenButton, VbenCheckbox } from '~/packages/@core/ui-kit/shadcn-ui';
+import { $t } from "~/packages/locales";
+import { useVbenForm } from "~/packages/@core/ui-kit/form-ui";
+import { VbenButton, VbenCheckbox } from "~/packages/@core/ui-kit/shadcn-ui";
 
-import Title from './auth-title.vue';
-import ThirdPartyLogin from './third-party-login.vue';
-import { useAuthStore } from '~/stores/auth';
-import { useSanctumError } from '~/lib/useSanctumError';
-import { useAccessStore } from '~/packages/stores';
-import { toast } from 'vue-sonner';
-import appConfig from '~/app.config';
+import Title from "./auth-title.vue";
+import ThirdPartyLogin from "./third-party-login.vue";
+import { useAuthStore } from "~/stores/auth";
+import { useSanctumError } from "~/lib/useSanctumError";
+import { useAccessStore } from "~/packages/stores";
+import { toast } from "vue-sonner";
+import appConfig from "~/app.config";
 interface Props extends AuthenticationProps {
   formSchema: VbenFormSchema[];
 }
 
 defineOptions({
-  name: 'AuthenticationLogin',
+  name: "AuthenticationLogin",
 });
 
 const props = withDefaults(defineProps<Props>(), {
-  codeLoginPath: '/auth/code-login',
-  forgetPasswordPath: '/auth/forget-password',
+  codeLoginPath: "/auth/code-login",
+  forgetPasswordPath: "/auth/forget-password",
   formSchema: () => [],
   loading: false,
-  qrCodeLoginPath: '/auth/qrcode-login',
-  registerPath: '/auth/register',
+  qrCodeLoginPath: "/auth/qrcode-login",
+  registerPath: "/auth/register",
   // showCodeLogin: true,
   showForgetPassword: true,
   // showQrcodeLogin: true,
   showRegister: true,
   showRememberMe: true,
   showThirdPartyLogin: true,
-  submitButtonText: '',
-  subTitle: '',
-  title: '',
+  submitButtonText: "",
+  subTitle: "",
+  title: "",
 });
 
 const emit = defineEmits<{
@@ -56,20 +56,20 @@ const [Form, formApi] = useVbenForm(
     },
     schema: computed(() => props.formSchema),
     showDefaultActions: false,
-  }),
+  })
 );
 const router = useRouter();
 
 const REMEMBER_ME_KEY = `REMEMBER_ME_USERNAME_${location.hostname}`;
 
-const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || '';
+const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || "";
 
 const rememberMe = ref(!!localUsername);
 
-const { login, isAuthenticated } = useSanctumAuth<User>()
+const { login, isAuthenticated } = useSanctumAuth<User>();
 
-const authstore = useAuthStore()
-const accessStore = useAccessStore()
+const authstore = useAuthStore();
+const accessStore = useAccessStore();
 console.log(accessStore.accessToken);
 
 async function handleSubmit() {
@@ -84,18 +84,21 @@ async function handleSubmit() {
   if (valid) {
     localStorage.setItem(
       REMEMBER_ME_KEY,
-      rememberMe.value ? values?.username : '',
+      rememberMe.value ? values?.email : ""
     );
     // emit('submit', values);
     // await authstore.authLogin(values)
     try {
       authstore.loginLoading = true;
-      await login(values);
-      toast.success('Login berhasil. Mengarahkan ke halaman beranda...');
+      await login({
+        ...values,
+        remember:rememberMe.value
+      });
+      toast.success("Login berhasil. Mengarahkan ke halaman beranda...");
     } catch (error) {
       console.log(error);
 
-      const err = useSanctumError(error)
+      const err = useSanctumError(error);
       // if (error instanceof FetchError && !error.response) {
       //   toast.error('Anda sedang offline, mohon cek koneksi internet Anda')
       // }
@@ -103,8 +106,8 @@ async function handleSubmit() {
       if (err.isValidationError) {
         formApi.form.setErrors({
           [err.bag[0].path]: err.bag[0].message,
-        })
-        toast.error(err.bag[0].message)
+        });
+        toast.error(err.bag[0].message);
         // ?.setErrors(err.bag)
       }
     } finally {
@@ -119,7 +122,7 @@ function handleGo(path: string) {
 
 onMounted(() => {
   if (localUsername) {
-    formApi.setFieldValue('username', localUsername);
+    formApi.setFieldValue("username", localUsername);
   }
 });
 
@@ -133,12 +136,12 @@ defineExpose({
     <slot name="title">
       <Title>
         <slot name="title">
-          {{ title || `${$t('authentication.welcomeBack')} 👋🏻` }}
+          {{ title || `${$t("authentication.welcomeBack")} 👋🏻` }}
         </slot>
         <template #desc>
           <span class="text-muted-foreground">
             <slot name="subTitle">
-              {{ subTitle || $t('authentication.loginSubtitle') }}
+              {{ subTitle || $t("authentication.loginSubtitle") }}
             </slot>
           </span>
         </template>
@@ -147,29 +150,59 @@ defineExpose({
 
     <Form />
 
-    <div v-if="showRememberMe || showForgetPassword" class="mb-6 flex justify-between">
+    <div
+      v-if="showRememberMe || showForgetPassword"
+      class="mb-6 flex justify-between"
+    >
       <div class="flex-center">
-        <VbenCheckbox v-if="showRememberMe" v-model:checked="rememberMe" name="rememberMe">
-          {{ $t('authentication.rememberMe') }}
+        <VbenCheckbox
+          v-if="showRememberMe"
+          v-model:checked="rememberMe"
+          name="rememberMe"
+        >
+          {{ $t("authentication.rememberMe") }}
         </VbenCheckbox>
       </div>
 
-      <span v-if="showForgetPassword" class="vben-link text-sm font-normal" @click="handleGo(forgetPasswordPath)">
-        {{ $t('authentication.forgetPassword') }}
+      <span
+        v-if="showForgetPassword"
+        class="vben-link text-sm font-normal"
+        @click="handleGo(forgetPasswordPath)"
+      >
+        {{ $t("authentication.forgetPassword") }}
       </span>
     </div>
-    <VbenButton :class="{
-      'cursor-wait': loading,
-    }" :loading="loading" aria-label="login" class="w-full" @click="handleSubmit">
-      {{ submitButtonText || $t('common.login') }}
+    <VbenButton
+      :class="{
+        'cursor-wait': loading,
+      }"
+      :loading="loading"
+      aria-label="login"
+      class="w-full"
+      @click="handleSubmit"
+    >
+      {{ submitButtonText || $t("common.login") }}
     </VbenButton>
 
-    <div v-if="showCodeLogin || showQrcodeLogin" class="mb-2 mt-4 flex items-center justify-between">
-      <VbenButton v-if="showCodeLogin" class="w-1/2" variant="outline" @click="handleGo(codeLoginPath)">
-        {{ $t('authentication.mobileLogin') }}
+    <div
+      v-if="showCodeLogin || showQrcodeLogin"
+      class="mb-2 mt-4 flex items-center justify-between"
+    >
+      <VbenButton
+        v-if="showCodeLogin"
+        class="w-1/2"
+        variant="outline"
+        @click="handleGo(codeLoginPath)"
+      >
+        {{ $t("authentication.mobileLogin") }}
       </VbenButton>
-      <VbenButton v-if="showQrcodeLogin" class="ml-4 w-1/2" variant="outline" @click="handleGo(qrCodeLoginPath)">
-        {{ $t('authentication.qrcodeLogin') }}
+      <VbenButton
+        v-if="showQrcodeLogin"
+        class="ml-4 w-1/2"
+        variant="outline"
+        @click="handleGo(qrCodeLoginPath)"
+      >
+        {{ $t("authentication.qrcodeLogin") }}
       </VbenButton>
     </div>
 
@@ -180,9 +213,12 @@ defineExpose({
 
     <slot name="to-register">
       <div v-if="showRegister" class="mt-3 text-center text-sm">
-        {{ $t('authentication.accountTip') }}
-        <span class="vben-link text-sm font-normal" @click="handleGo(registerPath)">
-          {{ $t('authentication.createAccount') }}
+        {{ $t("authentication.accountTip") }}
+        <span
+          class="vben-link text-sm font-normal"
+          @click="handleGo(registerPath)"
+        >
+          {{ $t("authentication.createAccount") }}
         </span>
       </div>
     </slot>

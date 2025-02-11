@@ -1,6 +1,7 @@
 export interface Quiz {
   soal: Soal[],
-  jawaban: Jawaban
+  jawaban: Jawaban,
+  durasi:number
 }
 export interface Soal extends Record<string, any>{
   st_nomor: number,
@@ -28,5 +29,11 @@ export interface Jawaban{
 export interface Jawab extends Record<string, any>{
   nomor:number,
   jawab:string,
-  multi:boolean
+  multi?:boolean
+}
+export interface WaktuTesPeserta{
+  tanggal:Date,
+  mulai:Date,
+  durasi:number,
+  jawaban:string
 }

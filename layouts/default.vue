@@ -1,65 +1,65 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch } from "vue";
 
-import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '~/packages/constants';
-import { useWatermark } from '~/packages/effects/hooks';
-import { BookOpenText, CircleHelp, MdiGithub } from '~/packages/icons';
-import { preferences } from '~/packages/preferences';
-import { useAccessStore, useUserStore } from '~/packages/stores';
-import { openWindow } from '~/packages/utils';
+import { VBEN_DOC_URL, VBEN_GITHUB_URL } from "~/packages/constants";
+import { useWatermark } from "~/packages/effects/hooks";
+import { BookOpenText, CircleHelp, MdiGithub } from "~/packages/icons";
+import { preferences } from "~/packages/preferences";
+import { useAccessStore, useUserStore } from "~/packages/stores";
+import { openWindow } from "~/packages/utils";
 
-import { $t } from '~/packages/locales';
-import { useAuthStore } from '~/stores/auth';
-import type { NotificationItem } from '../components/layouts/widgets';
-import { BasicLayout } from '~/components/layouts/basic';
-import UserDropdown from '~/components/layouts/widgets/user-dropdown/user-dropdown.vue';
-import Notification from '~/components/layouts/widgets/notification/notification.vue';
-import { AuthenticationLoginExpiredModal } from '~/packages/effects/common-ui';
-import LockScreen from '~/components/layouts/widgets/lock-screen/lock-screen.vue';
-import { registerAccessDirective } from '~/packages/effects/access';
-import { generateAccess } from '~/packages/router/access';
-import { accessRoutes } from '~/packages/router/routes';
-import appConfig from '~/app.config';
-
+import { $t } from "~/packages/locales";
+import { useAuthStore } from "~/stores/auth";
+import type { NotificationItem } from "../components/layouts/widgets";
+import { BasicLayout } from "~/components/layouts/basic";
+import UserDropdown from "~/components/layouts/widgets/user-dropdown/user-dropdown.vue";
+import Notification from "~/components/layouts/widgets/notification/notification.vue";
+import { AuthenticationLoginExpiredModal } from "~/packages/effects/common-ui";
+import LockScreen from "~/components/layouts/widgets/lock-screen/lock-screen.vue";
+import { registerAccessDirective } from "~/packages/effects/access";
+import { generateAccess } from "~/packages/router/access";
+import { accessRoutes } from "~/packages/router/routes";
+import appConfig from "~/app.config";
+import { PhoneCall } from "lucide-vue-next";
 
 const notifications = ref<NotificationItem[]>([
-  {
-    avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
-    date: '3小时前',
-    isRead: true,
-    message: '描述信息描述信息描述信息',
-    title: '收到了 14 份新周报',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '刚刚',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '朱偏右 回复了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/1',
-    date: '2024-01-01',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '曲丽丽 评论了你',
-  },
-  {
-    avatar: 'https://avatar.vercel.sh/satori',
-    date: '1天前',
-    isRead: false,
-    message: '描述信息描述信息描述信息',
-    title: '代办提醒',
-  },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/vercel.svg?text=VB',
+  //   date: '3小时前',
+  //   isRead: true,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '收到了 14 份新周报',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/1',
+  //   date: '刚刚',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '朱偏右 回复了你',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/1',
+  //   date: '2024-01-01',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '曲丽丽 评论了你',
+  // },
+  // {
+  //   avatar: 'https://avatar.vercel.sh/satori',
+  //   date: '1天前',
+  //   isRead: false,
+  //   message: '描述信息描述信息描述信息',
+  //   title: '代办提醒',
+  // },
 ]);
 
 const accessStore = useAccessStore();
 const userStore = useUserStore();
 if (!accessStore.isReady) {
   registerAccessDirective(useNuxtApp().vueApp);
-  accessStore.setIsReady(true)
+  accessStore.setIsReady(true);
 }
-const token = await appConfig.sanctum.tokenStorage.get(useNuxtApp())
+const token = await appConfig.sanctum.tokenStorage.get(useNuxtApp());
 accessStore.setAccessToken(token!);
 const userInfo = userStore.userInfo || (await useAuthStore().fetchUserInfo());
 const userRoles = userInfo.roles ?? [];
@@ -76,47 +76,56 @@ accessStore.setIsAccessChecked(true);
 
 const { destroyWatermark, updateWatermark } = useWatermark();
 const showDot = computed(() =>
-  notifications.value.some((item) => !item.isRead),
+  notifications.value.some((item) => !item.isRead)
 );
 
 const menus = computed(() => [
   {
     handler: () => {
-      openWindow(VBEN_DOC_URL, {
-        target: '_blank',
+      openWindow("https://ma.madrasahtbs.sch.id/", {
+        target: "_blank",
       });
     },
     icon: BookOpenText,
-    text: $t('ui.widgets.document'),
+    text: "Website Resmi",
   },
   {
     handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
+      openWindow("https://wa.me/82312129911", {
+        target: "_blank",
       });
     },
-    icon: MdiGithub,
-    text: 'GitHub',
+    icon: PhoneCall,
+    text: "Hubungi Panitia PPDB",
   },
-  {
-    handler: () => {
-      openWindow(`${VBEN_GITHUB_URL}/issues`, {
-        target: '_blank',
-      });
-    },
-    icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
-  },
+  // {
+  //   handler: () => {
+  //     openWindow(VBEN_GITHUB_URL, {
+  //       target: '_blank',
+  //     });
+  //   },
+  //   icon: MdiGithub,
+  //   text: 'GitHub',
+  // },
+  // {
+  //   handler: () => {
+  //     openWindow(`${VBEN_GITHUB_URL}/issues`, {
+  //       target: '_blank',
+  //     });
+  //   },
+  //   icon: CircleHelp,
+  //   text: $t('ui.widgets.qa'),
+  // },
 ]);
 
 const avatar = computed(() => {
   return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
 });
 
-const { logout } = useSanctumAuth()
+const { logout } = useSanctumAuth();
 async function handleLogout() {
   await useAuthStore().logout(false);
-  logout()
+  logout();
 }
 
 function handleNoticeClear() {
@@ -139,22 +148,35 @@ watch(
   },
   {
     immediate: true,
-  },
+  }
 );
 </script>
 
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
     <template #user-dropdown>
-      <UserDropdown :avatar :menus :text="userStore.userInfo?.realName" description="ann.vben@gmail.com" tag-text="Pro"
-        @logout="handleLogout" />
+      <UserDropdown
+        :avatar
+        :menus
+        :text="userStore.userInfo?.realName"
+        :description="userStore.userInfo?.username"
+        :tag-text="userStore.userInfo?.roles?.[0]"
+        @logout="handleLogout"
+      />
     </template>
     <template #notification>
-      <Notification :dot="showDot" :notifications="notifications" @clear="handleNoticeClear"
-        @make-all="handleMakeAll" />
+      <Notification
+        :dot="showDot"
+        :notifications="notifications"
+        @clear="handleNoticeClear"
+        @make-all="handleMakeAll"
+      />
     </template>
     <template #extra>
-      <AuthenticationLoginExpiredModal v-model:open="accessStore.loginExpired" :avatar>
+      <AuthenticationLoginExpiredModal
+        v-model:open="accessStore.loginExpired"
+        :avatar
+      >
         <!-- <LoginForm /> -->
       </AuthenticationLoginExpiredModal>
     </template>
