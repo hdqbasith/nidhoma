@@ -33,7 +33,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 const client = useSanctumClient();
 const nomor = ref(1);
-const mapel = "PPDB_2024";
+const mapel = "simcbt_ppdb2021";
 const jawab = ref<Jawab[]>([]);
 const mulai = ref(false);
 const quiz = await client<Quiz>("/ulangan/soal", {
@@ -47,7 +47,7 @@ const quiz = await client<Quiz>("/ulangan/soal", {
 });
 const soal = shuffle(quiz.soal);
 console.log(soal);
-
+const pelanggaran=ref(0);
 const simpan = () => {
   const data = ref<string[]>([]);
   jawab.value.forEach((j) => {
@@ -59,6 +59,7 @@ const simpan = () => {
       mapel: mapel,
       jawaban: data.value.join(","),
       mulai: confirmSelesai.value,
+      pelanggaran:pelanggaran.value
     },
     onResponse({ response }) {
       if(response._data?.jawaban?.jt_waktu_selesai){
@@ -207,33 +208,37 @@ const nilai=ref(()=>{
     return 'Klik tombol di atas untuk memulai'
   }
 })
+window.onblur = function() {
+  pelanggaran.value++;
+}
 </script>
 <template>
   <div>
     <Card class="m-6" v-if="!mulai">
       <CardHeader>
-        <CardTitle>Simulasi Uji Kompetensi</CardTitle>
+        <CardTitle>Uji Kompetensi</CardTitle>
         <CardDescription
           >
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Tes ini bertujuan untuk mengukur sejauh mana kesiapan calon siswa
+        <!-- <p>Tes ini bertujuan untuk mengukur sejauh mana kesiapan calon siswa
           dalam mengikuti pembelajaran di MA NU TBS Kudus. Kami harap tes ini
           dikerjakan dengan jujur, tanpa bantuan siapapun. Kami tidak bisa
           mengetahui jika Anda melakukan kecurangan dalam mengerjakan tes ini,
           namun kami yakin bahwa bagi Anda yang mengerjakan tes ini dengan
           jujur, maka Allah akan berikan barokah yang luar biasa bagi Anda
-          sekeluarga. Selamat mengerjakan...</p>
+          sekeluarga. Selamat mengerjakan...</p> -->
+          <p>Waktu Anda 60 menit untuk mengerjakan uji kompetensi ini. Tidak ada pengerjaan ulang. Kami ingatkan, kerjakanlah dengan jujur, agar hasil pengerjaan Anda membawa berkah. </p>
         <Button @click="cekJawaban" class="my-3" v-if="nilai()=='Klik tombol di atas untuk memulai'"
           >Mulai &nbsp;
           <ArrowRightSquareIcon />
         </Button>
         <div v-else>
           <p class="my-3 font-bold">{{ nilai() }}</p>
-          <Button @click="ulangi">
+          <!-- <Button @click="ulangi">
             <RefreshCcw/>&nbsp;Ulangi
-          </Button>
+          </Button> -->
         </div>
       </CardContent>
       <CardFooter> </CardFooter>
@@ -348,6 +353,11 @@ const nilai=ref(()=>{
           <li>
             Sisa Waktu<span class="absolute left-40 font-bold">
               : {{ sisaWaktu }}
+            </span>
+          </li>
+          <li>
+            Pindah tab<span class="absolute left-40 font-bold">
+              : {{ pelanggaran }}
             </span>
           </li>
         </ul>

@@ -16,5 +16,10 @@ export type ButtonVariants =
   | 'link'
   | 'outline'
   | 'secondary'
+  | 'blue'
+  | 'yellow'
+  | 'teal'
+  | 'black'
+  | 'red'
   | null
   | undefined;

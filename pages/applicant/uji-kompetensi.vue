@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   title: "Uji Kompetensi",
-  name: "uji-kompetensi-siswa",
+  name: "uji-kompetensi",
 })
 
 </script>

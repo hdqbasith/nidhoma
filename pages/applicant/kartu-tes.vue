@@ -2,7 +2,7 @@
 
 definePageMeta({
   title: "Kartu Uji Kompetensi",
-  name: "kartu-ppdb",
+  name: "kartu-tes",
 })
 
 </script>

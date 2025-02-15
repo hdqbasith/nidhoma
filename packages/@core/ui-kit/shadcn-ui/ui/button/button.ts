@@ -28,6 +28,11 @@ export const buttonVariants = cva(
           'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
+        teal: 'to-teal-900 from-teal-600 bg-gradient-to-b font-bold text-white hover:bg-gradient-to-t focus:bg-gradient-to-r',
+        yellow:'to-yellow-900 from-yellow-600 bg-gradient-to-b font-bold text-white hover:bg-gradient-to-t focus:bg-gradient-to-r',
+        red:'to-red-900 from-red-600 bg-gradient-to-b font-bold text-white hover:bg-gradient-to-t focus:bg-gradient-to-r',
+        blue:'to-blue-900 from-blue-600 bg-gradient-to-b font-bold text-white hover:bg-gradient-to-t focus:bg-gradient-to-r',
+        black:'to-gray-900 from-gray-600 bg-gradient-to-b font-bold text-white hover:bg-gradient-to-t focus:bg-gradient-to-r'
       },
     },
   },
