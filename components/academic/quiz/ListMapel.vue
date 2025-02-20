@@ -24,7 +24,7 @@ import {
 } from "~/packages/@core/ui-kit/shadcn-ui";
 import type { Mapel } from "./types";
 import dayjs from "dayjs";
-import { Download, Eye, Pencil, Plus, Trash2, Upload } from "lucide-vue-next";
+import { Download, Eye, Pencil, Plus, Trash2 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{
@@ -47,50 +47,22 @@ const refreshMapel = () =>
 const downloadTemplate = URL.createObjectURL(
   await client("/download/template-ulangan")
 );
-const loading = ref(false);
-const uploadSoal = (file: any) => {
-  const form = new FormData();
-  form.append("jenis", "soal");
-  if (file=='ya') {
-    form.append("overwrite", "ya");
-    confirmUpload.value = false;
-  } else {
-    form.append("file", file);
-  }
-  client("/upload/soal", {
-    method: "post",
-    body: form,
+onMounted(() => {
+  refreshMapel();
+});
+const hapusSoal = (kode: string) => {
+  client("ulangan/hapus-soal", {
+    method: "delete",
+    body: {
+      mt_kode: kode,
+    },
     onResponse({ response }) {
-      if (response._data.aksi == "confirm") {
-        confirmUpload.value = true;
-      } else {
-        toast.success("Soal berhasil diupload");
-        refreshMapel();
-      }
+      toast.success("Data sudah dihapus!");
     },
-    onResponseError({ error }) {
-      toast.error(error?.message!);
-    },
-  }).finally(() => {
-    showUpload.value = false;
   });
 };
-const showUpload = ref(false);
-const confirmUpload = ref(false);
-onMounted(()=>{
-  refreshMapel();
-})
-const hapusSoal=(kode:string)=>{
-  client('ulangan/hapus-soal',{
-    method:'delete',
-    body:{
-      mt_kode:kode
-    },
-    onResponse({response}){
-      toast.success('Data sudah dihapus!');
-    }
-  })
-}
+const selectedMapel = ref<Mapel>();
+const showEdit = ref(false);
 </script>
 <template>
   <Card class="m-3">
@@ -103,9 +75,7 @@ const hapusSoal=(kode:string)=>{
         >
           <Button variant="teal"><Download /> Download Template</Button>
         </a>
-        <Button variant="blue" @click="showUpload = true"
-          ><Upload /> Upload excel...</Button
-        >
+        <AcademicQuizAksiUpload @uploaded="refreshMapel()" />
       </div>
       <CardTitle> Daftar Mapel Ulangan </CardTitle>
       <CardDescription> </CardDescription>
@@ -117,7 +87,9 @@ const hapusSoal=(kode:string)=>{
           <TableRow>
             <TableHead class="w-fit">No.</TableHead>
             <TableHead>Mapel</TableHead>
+            <TableHead>Kelas</TableHead>
             <TableHead>Tanggal</TableHead>
+            <TableHead>Durasi</TableHead>
             <TableHead>Token</TableHead>
             <TableHead class="w-fit">Aksi</TableHead>
           </TableRow>
@@ -131,13 +103,29 @@ const hapusSoal=(kode:string)=>{
               {{ m.mt_pelajaran }}
             </TableCell>
             <TableCell>
+              {{ m.mt_kelas }}
+            </TableCell>
+            <TableCell>
               {{ dayjs(m.mt_date).format("DD-MM-YYYY") }}
+            </TableCell>
+            <TableCell>
+              {{ m.mt_durasi }}
             </TableCell>
             <TableCell>
               {{ m.mt_token }}
             </TableCell>
             <TableCell class="grid grid-cols-3 gap-1 w-fit">
-              <Button size="icon" variant="blue"><Pencil /></Button>
+              <Button
+                size="icon"
+                variant="blue"
+                @click="
+                  {
+                    selectedMapel = m;
+                    showEdit = true;
+                  }
+                "
+                ><Pencil
+              /></Button>
               <Button size="icon" variant="red"><Trash2 /></Button>
               <Button size="icon" variant="teal"><Eye /></Button>
             </TableCell>
@@ -146,39 +134,17 @@ const hapusSoal=(kode:string)=>{
       </Table>
     </CardContent>
     <CardFooter>
+      <AcademicQuizAksiEdit
+        :show="showEdit"
+        :mapel="selectedMapel"
+        @edited="
+          {
+            showEdit = false;
+            $event == 'success' ? refreshMapel() : '';
+          }
+        "
+      />
       <slot name="footer"></slot>
     </CardFooter>
-    <Dialog v-model:open="showUpload">
-      <DialogScrollContent>
-        <DialogHeader>
-          <DialogTitle>Upload Soal Baru</DialogTitle>
-          <DialogDescription>
-            Pastikan Anda menggunakan template yang sudah disediakan dan
-            melengkapi isinya dengan benar
-          </DialogDescription>
-        </DialogHeader>
-        <InputUploadFile
-          jenis="soal"
-          nama="Mapel"
-          :loading="loading"
-          @file="uploadSoal"
-        />
-      </DialogScrollContent>
-    </Dialog>
-    <Dialog v-model:open="confirmUpload">
-      <DialogScrollContent>
-        <DialogHeader>
-          <DialogTitle>Soal mapel ini sudah ada</DialogTitle>
-          <DialogDescription>
-            Apakah Anda ingin mengganti dengan soal baru? Soal sebelumnya akan
-            dihapus!
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter class="mt-2 flex flex-row">
-          <Button variant="red" @click="confirmUpload = false">Tidak</Button>
-          <Button variant="blue" @click="uploadSoal('ya')">Ya</Button>
-        </DialogFooter>
-      </DialogScrollContent>
-    </Dialog>
   </Card>
 </template>

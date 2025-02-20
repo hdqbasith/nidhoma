@@ -39,10 +39,10 @@ export interface WaktuTesPeserta {
 }
 export interface Mapel {
   mt_kode: string,
-  mt_guru: string,
+  mt_guru?: string,
   mt_pelajaran: string,
-  mt_kelas: string,
+  mt_kelas?: string,
   mt_token: string,
-  mt_durasi: string,
+  mt_durasi: number,
   mt_date: string
 }
