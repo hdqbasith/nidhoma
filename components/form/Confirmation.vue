@@ -1,23 +1,38 @@
 <script setup lang="ts">
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '~/packages/@core/ui-kit/shadcn-ui';
-
-
+import { Trash2 } from "lucide-vue-next";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+} from "~/packages/@core/ui-kit/shadcn-ui";
+const props=defineProps<{
+  open:boolean
+}>()
+const emit=defineEmits(['action'])
 </script>
 <template>
-  <AlertDialog>
-    <AlertDialogTrigger>
-      
-    </AlertDialogTrigger>
+  <AlertDialog @update:open="emit('action','close')" v-bind:open="open">
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+        <AlertDialogTitle>Anda Yakin?</AlertDialogTitle>
         <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+          Data yang sudah dihapus tidak bisa dikembalikan. Pastikan Anda tidak akan menyesal!
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction>Continue</AlertDialogAction>
+        <AlertDialogCancel @click="emit('action','close')" >
+          Batal
+        </AlertDialogCancel>
+        <AlertDialogAction @click="emit('action','hapus')">
+          Ya
+        </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

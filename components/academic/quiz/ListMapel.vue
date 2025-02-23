@@ -24,7 +24,7 @@ import {
 } from "~/packages/@core/ui-kit/shadcn-ui";
 import type { Mapel } from "./types";
 import dayjs from "dayjs";
-import { Download, Eye, Pencil, Plus, Trash2 } from "lucide-vue-next";
+import { ClipboardList, Download, Eye, Pencil, Plus, Trash2 } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{
@@ -58,11 +58,27 @@ const hapusSoal = (kode: string) => {
     },
     onResponse({ response }) {
       toast.success("Data sudah dihapus!");
+      refreshMapel();
     },
   });
 };
 const selectedMapel = ref<Mapel>();
 const showEdit = ref(false);
+const showConfirm = ref(false);
+const confirmAction = (e: any) => {
+  switch (e) {
+    case "close":
+      showConfirm.value = false;
+      break;
+    case "hapus":
+      hapusSoal(selectedMapel.value?.mt_kode!);
+      break;
+
+    default:
+      showConfirm.value = false;
+      break;
+  }
+};
 </script>
 <template>
   <Card class="m-3">
@@ -91,7 +107,7 @@ const showEdit = ref(false);
             <TableHead>Tanggal</TableHead>
             <TableHead>Durasi</TableHead>
             <TableHead>Token</TableHead>
-            <TableHead class="w-fit">Aksi</TableHead>
+            <TableHead>Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -114,7 +130,7 @@ const showEdit = ref(false);
             <TableCell>
               {{ m.mt_token }}
             </TableCell>
-            <TableCell class="grid grid-cols-3 gap-1 w-fit">
+            <TableCell class="grid grid-cols-4 gap-1 w-fit">
               <Button
                 size="icon"
                 variant="blue"
@@ -126,8 +142,23 @@ const showEdit = ref(false);
                 "
                 ><Pencil
               /></Button>
-              <Button size="icon" variant="red"><Trash2 /></Button>
-              <Button size="icon" variant="teal"><Eye /></Button>
+              <Button
+                size="icon"
+                variant="red"
+                @click="
+                  {
+                    showConfirm = true;
+                    selectedMapel = m;
+                  }
+                "
+                ><Trash2
+              /></Button>
+              <NuxtLink :to="'/student/soal-um?mapel='+m.mt_kode">
+                <Button size="icon" variant="teal"><Eye /></Button>
+              </NuxtLink>
+              <NuxtLink :to="'/admin/ulangan/rekap?mapel='+m.mt_kode">
+                <Button size="icon" variant="yellow"><ClipboardList /></Button>
+              </NuxtLink>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -145,6 +176,10 @@ const showEdit = ref(false);
         "
       />
       <slot name="footer"></slot>
+      <FormConfirmation
+        :open="showConfirm"
+        @action="confirmAction"
+      ></FormConfirmation>
     </CardFooter>
   </Card>
 </template>
