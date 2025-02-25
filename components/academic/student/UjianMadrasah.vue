@@ -38,6 +38,7 @@ import type {
 import { toast } from "vue-sonner";
 import { method, range, shuffle } from "lodash";
 import dayjs, { Dayjs } from "dayjs";
+import { cn } from "~/lib/utils";
 
 const client = useSanctumClient();
 const nomor = ref(1);
@@ -147,7 +148,7 @@ const cekJawaban = async () => {
       mulai.value = true;
       const simpanPerMenit = ref(0);
       timer.value = setInterval(() => {
-        if (waktu.value >= 0) {
+        if (waktu.value > 0) {
           if (batas60menit.value > 0) {
             batas60menit.value -= 1000;
           } else {
@@ -291,7 +292,7 @@ window.onfocus = function () {
     pelanggaran.value++;
   }
   if (blur.value >= 10) {
-    // lock("lock");
+    lock("lock");
   }
 };
 const aturan = [
@@ -481,15 +482,18 @@ const ScrollToTop = () => {
               }
             "
             :class="
-              jawab[i]?.jawab == 'r'
-                ? style.ragu
-                : jawab[i]?.jawab == ''
-                ? style.biasa
-                : jawab[i].multi == false
-                ? style.terpilih
-                : jawab[i].jawab.length - 4 == 3
-                ? style.biasa
-                : style.terpilih
+              cn(
+                nomor == i + 1 ? 'shadow-yellow-500 shadow-md' : '',
+                jawab[i]?.jawab == 'r'
+                  ? style.ragu
+                  : jawab[i]?.jawab == ''
+                  ? style.biasa
+                  : jawab[i].multi == false
+                  ? style.terpilih
+                  : jawab[i].jawab.length - 4 == 3
+                  ? style.biasa
+                  : style.terpilih
+              )
             "
             >{{ i + 1 }}</Button
           >
@@ -528,7 +532,11 @@ const ScrollToTop = () => {
           <DialogTrigger :disabled="batas60menit > 0">
             <Button :disabled="batas60menit > 0"
               >Kirim Jawaban
-              {{ new Date(batas60menit).toISOString().slice(11, 19) }}</Button
+              {{
+                batas60menit > 0
+                  ? new Date(batas60menit).toISOString().slice(11, 19)
+                  : ""
+              }}</Button
             >
           </DialogTrigger>
           <DialogScrollContent>
