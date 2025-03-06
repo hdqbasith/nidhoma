@@ -1,4 +1,8 @@
-<script setup>
+<script setup lang="ts">
+definePageMeta({
+    hideInTab:true,
+})
+
 </script>
 <template>
     <NuxtLayout name="blank">

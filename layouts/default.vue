@@ -20,7 +20,7 @@ import { registerAccessDirective } from "~/packages/effects/access";
 import { generateAccess } from "~/packages/router/access";
 import { accessRoutes } from "~/packages/router/routes";
 import appConfig from "~/app.config";
-import { PhoneCall } from "lucide-vue-next";
+import { Key, PhoneCall } from "lucide-vue-next";
 
 const notifications = ref<NotificationItem[]>([
   // {
@@ -82,6 +82,13 @@ const showDot = computed(() =>
 const menus = computed(() => [
   {
     handler: () => {
+      navigateTo('/auth/ganti-password')
+    },
+    icon: Key,
+    text: "Ganti Password",
+  },
+  {
+    handler: () => {
       openWindow("https://ma.madrasahtbs.sch.id/", {
         target: "_blank",
       });
@@ -91,7 +98,7 @@ const menus = computed(() => [
   },
   {
     handler: () => {
-      openWindow("https://wa.me/82312129911", {
+      openWindow("https://wa.me/6282312129911", {
         target: "_blank",
       });
     },

@@ -33,7 +33,6 @@ const columns = computed(() => props.table.getAllColumns()
     <DropdownMenuContent align="end" class="w-[150px]">
       <DropdownMenuLabel>Tampilkan</DropdownMenuLabel>
       <DropdownMenuSeparator />
-
       <DropdownMenuCheckboxItem
         v-for="column in columns"
         :key="column.id"

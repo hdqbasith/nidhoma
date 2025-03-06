@@ -14,6 +14,12 @@ import {
   DialogScrollContent,
   DialogTitle,
   DialogTrigger,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCaption,
@@ -24,7 +30,15 @@ import {
 } from "~/packages/@core/ui-kit/shadcn-ui";
 import type { Mapel } from "./types";
 import dayjs from "dayjs";
-import { ClipboardList, Download, Eye, Pencil, Plus, Trash2 } from "lucide-vue-next";
+import {
+  ClipboardList,
+  Download,
+  Eye,
+  MonitorCheck,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{
@@ -97,7 +111,6 @@ const confirmAction = (e: any) => {
       <CardDescription> </CardDescription>
     </CardHeader>
     <CardContent>
-      <slot name="content"></slot>
       <Table>
         <TableHeader class="">
           <TableRow>
@@ -130,8 +143,9 @@ const confirmAction = (e: any) => {
             <TableCell>
               {{ m.mt_token }}
             </TableCell>
-            <TableCell class="grid grid-cols-4 gap-1 w-fit">
+            <TableCell class="grid grid-cols-5 gap-1 w-fit">
               <Button
+                title="Edit"
                 size="icon"
                 variant="blue"
                 @click="
@@ -143,6 +157,7 @@ const confirmAction = (e: any) => {
                 ><Pencil
               /></Button>
               <Button
+                title="Hapus"
                 size="icon"
                 variant="red"
                 @click="
@@ -153,11 +168,15 @@ const confirmAction = (e: any) => {
                 "
                 ><Trash2
               /></Button>
-              <NuxtLink :to="'/student/soal-um?mapel='+m.mt_kode">
-                <Button size="icon" variant="teal"><Eye /></Button>
+              <NuxtLink :to="'/student/soal-um?mapel=' + m.mt_kode">
+                <Button title="Lihat Soal" size="icon" variant="teal"
+                  ><Eye
+                /></Button>
               </NuxtLink>
-              <NuxtLink :to="'/admin/ulangan/rekap?mapel='+m.mt_kode">
-                <Button size="icon" variant="yellow"><ClipboardList /></Button>
+              <NuxtLink :to="'/admin/ulangan/rekap?mapel=' + m.mt_kode">
+                <Button title="Rekap" size="icon" variant="yellow"
+                  ><ClipboardList
+                /></Button>
               </NuxtLink>
             </TableCell>
           </TableRow>

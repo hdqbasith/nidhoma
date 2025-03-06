@@ -45,8 +45,28 @@ export interface Mapel {
   mt_kelas?: string,
   mt_token: string,
   mt_durasi: number,
-  mt_date: string
+  mt_date: string,
+  mt_nilai?: number
 }
-export interface Rekap{
-  name:string
+export interface Rekap {
+  um_id:            number;
+  um_absen:         number;
+  um_nisn:          string;
+  um_akun:          string;
+  um_nama:          string;
+  um_sesi:          number;
+  um_ruang:         number;
+  um_kelas:         string;
+  um_mapel:         string;
+  um_progres:       string;
+  um_nilai:         number;
+  um_no_ujian:      string;
+  jt_id:            number;
+  jt_akun:          string;
+  jt_waktu_mulai:   Date;
+  jt_waktu_selesai: Date;
+  jt_jawaban:       null;
+  jt_nilai:         string;
+  jt_pelanggaran:   string;
+  jt_mapel:         string;
 }

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-
+definePageMeta({
+  name: "UMAdmin",
+  title: "Ujian Madrasah",
+});
 </script>
 <template>
-  <AcademicQuizUjianMadrasah/>
+  <AcademicQuizAktif></AcademicQuizAktif>
 </template>

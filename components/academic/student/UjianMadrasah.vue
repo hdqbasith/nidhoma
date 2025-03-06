@@ -39,6 +39,8 @@ import { toast } from "vue-sonner";
 import { method, range, shuffle } from "lodash";
 import dayjs, { Dayjs } from "dayjs";
 import { cn } from "~/lib/utils";
+import { useAccessStore } from "~/packages/stores";
+import { useRefresh } from "~/packages/effects/hooks";
 
 const client = useSanctumClient();
 const nomor = ref(1);
@@ -61,12 +63,28 @@ const quiz = await client<Quiz>("/ulangan/soal", {
 });
 const soal = shuffle(quiz.soal);
 const pelanggaran = ref(0);
+const access = useAccessStore();
 const simpan = () => {
   const data = ref<string[]>([]);
   jawab.value.forEach((j) => {
     data.value[j.nomor - 1] = j.jawab.split("|").join("");
   });
-  return client<Jawaban>("ulangan/jawaban", {
+  client("/ulangan/verify-um", {
+    method: "get",
+    query: {
+      token: access.accessToken,
+      terjawab: rekap.value.terjawab,
+    },
+    onResponse({ response }) {
+      if (response._data == "gagal") {
+        navigateTo("/dashboard");
+        toast.error(
+          "Silakan minta Admin untuk mereset jawaban Anda karena Anda login ulang!"
+        );
+      }
+    },
+  });
+  return client<Jawaban>("/ulangan/jawaban", {
     method: "post",
     body: {
       mapel: mapel,
@@ -88,7 +106,7 @@ const simpan = () => {
   });
 };
 const timer = ref();
-const token = ref("KFBTR");
+const token = ref();
 const blur = ref();
 const batas60menit = ref(60 * 60 * 1000);
 const cekJawaban = async () => {
@@ -118,7 +136,16 @@ const cekJawaban = async () => {
       multi: s.st_jawaban.length == 1 ? false : true,
     };
     if (s.st_jawaban.length > 1) {
-      jawab.value[i].jawab = [...jawab.value[i].jawab].join("|");
+      let temp=Array(5);
+      const tempJawab=[...jawab.value[i].jawab]
+      tempJawab.forEach((t)=>{
+        if(t=='a') temp[0]='a';
+        if(t=='b') temp[1]='b';
+        if(t=='c') temp[2]='c';
+        if(t=='d') temp[3]='d';
+        if(t=='e') temp[4]='e';
+      })
+      jawab.value[i].jawab = temp.join("|");
     }
   });
   pelanggaran.value = data.pelanggaran;
@@ -156,9 +183,10 @@ const cekJawaban = async () => {
           }
           waktu.value -= 1000;
           simpanPerMenit.value++;
-          if (simpanPerMenit.value == 60) {
+          if (simpanPerMenit.value == 30) {
             simpanPerMenit.value = 0;
             simpan();
+            lock("");
           }
           blur.value++;
         } else {
@@ -244,11 +272,16 @@ const tandai = () => {
 const rekap = ref({
   terjawab: computed(
     () =>
-      soal.length -
-      jawab.value.filter((j) => j.jawab == "" || j.jawab == "r").length
+      jawab.value.filter(
+        (j) => (j.multi==false  && j.jawab != "r" && j.jawab.length==1) || (j.multi==true && j.jawab.length==7)
+      ).length
   ),
   kosong: computed(
-    () => jawab.value.filter((j) => j.jawab == "" || j.jawab == "r").length
+    () =>
+      soal.length -
+      jawab.value.filter(
+        (j) => j.jawab.length >= 1 && j.jawab != "r" && j.jawab!="||||"
+      ).length
   ),
   ragu: computed(() => jawab.value.filter((j) => j.jawab == "r").length),
 });
@@ -272,13 +305,13 @@ const lock = (aksi: string) => {
     body: {
       aksi: aksi,
       pelanggaran: pelanggaran.value,
+      mapel:mapel
     },
     onResponse({ response }) {
       if (response._data.locked) {
         toast.error("Silakan temui Admin untuk membuka akses");
         locked.value = true;
       } else {
-        toast.success("Selamat mengerjakan kembali...");
         locked.value = false;
       }
     },
@@ -287,12 +320,18 @@ const lock = (aksi: string) => {
 onMounted(() => {
   lock("");
 });
+onBeforeUnmount(()=>{
+  clearInterval(timer.value)
+})
 window.onfocus = function () {
   if (blur.value >= 3) {
     pelanggaran.value++;
   }
   if (blur.value >= 10) {
     lock("lock");
+    simpan().finally(()=>{
+      reloadNuxtApp();
+    })
   }
 };
 const aturan = [
@@ -318,7 +357,7 @@ const ScrollToTop = () => {
     <Card class="m-6" v-if="!mulai">
       <CardHeader>
         <CardTitle>Ujian Madrasah {{ quiz.mapel.mt_pelajaran }}</CardTitle>
-        <CardDescription> </CardDescription>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <!-- <p>Tes ini bertujuan untuk mengukur sejauh mana kesiapan calon siswa
@@ -374,7 +413,7 @@ const ScrollToTop = () => {
           Waktu Tersisa:
           {{ sisaWaktu }}
         </div>
-        <CardTitle>Soal nomor {{ nomor.toString() }}</CardTitle>
+        <CardTitle>Soal nomor {{ nomor.toString() }} {{ quiz.mapel.mt_pelajaran }}</CardTitle>
       </CardHeader>
       <CardContent>
         <img :src="soalAktif.st_gambar" v-if="soalAktif.st_gambar" />
@@ -390,7 +429,7 @@ const ScrollToTop = () => {
           <template v-if="soalAktif.st_jawaban.length == 1">
             <div
               v-if="soalAktif['st_' + v] && soalAktif.st_dir != 'rtl'"
-              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
+              class="border border-gray-200 p-3 rounded-sm hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
               :class="
                 jawab[nomor - 1]?.jawab == v
                   ? style.terpilih
@@ -403,7 +442,7 @@ const ScrollToTop = () => {
             ></div>
             <div
               v-else-if="soalAktif['st_' + v] && soalAktif.st_dir == 'rtl'"
-              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
+              class="border border-gray-200 p-3 rounded-sm hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
               v-html="hurufArab[i] + '. ' + angkaArab(soalAktif['st_' + v])"
               @click="updateJawab(v)"
               :class="
@@ -418,7 +457,7 @@ const ScrollToTop = () => {
           <template v-else>
             <div
               v-if="soalAktif['st_' + v] && soalAktif.st_dir != 'rtl'"
-              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
+              class="border border-gray-200 p-3 rounded-sm hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
               :class="
                 jawab[nomor - 1]?.jawab.includes(v)
                   ? style.terpilih
@@ -431,7 +470,7 @@ const ScrollToTop = () => {
             ></div>
             <div
               v-else-if="soalAktif['st_' + v] && soalAktif.st_dir == 'rtl'"
-              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
+              class="border border-gray-200 p-3 rounded-sm hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
               v-html="hurufArab[i] + '. ' + angkaArab(soalAktif['st_' + v])"
               @click="updateJawab(v)"
               :class="
@@ -465,7 +504,7 @@ const ScrollToTop = () => {
     </Card>
     <Card class="m-3" v-if="mulai">
       <CardHeader>
-        <CardTitle>Jawaban</CardTitle>
+        <CardTitle>Jawaban {{ quiz.mapel.mt_pelajaran }}</CardTitle>
         <CardDescription>Rekapitulasi jawaban Anda</CardDescription>
       </CardHeader>
       <CardContent>
@@ -491,8 +530,8 @@ const ScrollToTop = () => {
                   : jawab[i].multi == false
                   ? style.terpilih
                   : jawab[i].jawab.length - 4 == 3
-                  ? style.biasa
-                  : style.terpilih
+                  ? style.terpilih
+                  : style.biasa
               )
             "
             >{{ i + 1 }}</Button

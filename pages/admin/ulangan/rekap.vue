@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner';
 
+definePageMeta({
+  name: "RekapUM",
+  title: "Rekap UM",
+});
 const mapel=useRoute().query.mapel
 if(!mapel) {
   useRouter().push("/admin/ulangan/list-mapel");

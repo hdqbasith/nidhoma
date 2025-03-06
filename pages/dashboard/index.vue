@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { DashboardApplicant } from '#components';
 import { useAccessStore } from '~/packages/stores';
 definePageMeta({
     title:"page.dashboard.title",
@@ -15,5 +14,6 @@ const role=user?.value?.roles?.[0].name;
           <DashboardApplicant v-else-if="role=='applicant'"/>
           <DashboardStudent v-else-if="role=='student'"/>
           <DashboardAdmin v-else-if="role=='admin'"/>
+          <DashboardTeacher v-else-if="role=='teacher'"/>
      </div>
 </template>

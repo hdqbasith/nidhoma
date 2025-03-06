@@ -29,7 +29,7 @@ interface AccessState {
   /**
    * 登录是否过期
    */
-  loginExpired: boolean;
+  loginExpired: boolean|undefined;
   /**
    * 登录 accessToken
    */

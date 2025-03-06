@@ -2,12 +2,12 @@
 import dayjs from 'dayjs';
 
 definePageMeta({
-  title:'Jadwal UM',
+  title:'Simulasi UM',
   name:'JadwalUM'
 });
-const mulai=dayjs().format('YYYY-MM-DD')
-const selesai=dayjs().format('YYYY-MM-DD')
+const date_start=useRoute().query?.date_start as string;
+const date_end=useRoute().query?.date_end as string;
 </script>
 <template>
-  <AcademicStudentListMapel :date_start="mulai" :date_end="selesai"/>
+  <AcademicStudentListMapel :date_start="date_start" :date_end="date_end"/>
 </template>

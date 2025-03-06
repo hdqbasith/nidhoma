@@ -24,12 +24,21 @@ import {
 } from "~/packages/@core/ui-kit/shadcn-ui";
 import type { Mapel } from "../quiz/types";
 import dayjs from "dayjs";
-import { ArrowRightSquare, ArrowRightSquareIcon, Download, Eye, Pencil, Plus, Trash2 } from "lucide-vue-next";
+import {
+  ArrowRightSquare,
+  ArrowRightSquareIcon,
+  Download,
+  Eye,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{
   date_start?: string;
   date_end?: string;
+  showAksi?:boolean;
 }>();
 const client = useSanctumClient();
 const mapel = ref<Mapel[]>();
@@ -65,6 +74,7 @@ const selectedMapel = ref<Mapel>();
             <TableHead>Kelas</TableHead>
             <TableHead>Tanggal</TableHead>
             <TableHead>Durasi</TableHead>
+            <TableHead>Nilai</TableHead>
             <TableHead class="w-fit">Aksi</TableHead>
           </TableRow>
         </TableHeader>
@@ -83,10 +93,16 @@ const selectedMapel = ref<Mapel>();
               {{ dayjs(m.mt_date).format("DD-MM-YYYY") }}
             </TableCell>
             <TableCell>
-              {{ m.mt_durasi }}
+              {{ m.mt_durasi }} menit
+            </TableCell>
+            <TableCell>
+              {{ m.mt_nilai? m.mt_nilai.toFixed(2):'-' }}
             </TableCell>
             <TableCell class="grid grid-cols-3 gap-1 w-fit">
-              <NuxtLink :to="'/student/soal-um?mapel='+m.mt_kode">
+              <NuxtLink
+                :to="'/student/soal-um?mapel=' + m.mt_kode"
+                v-if="dayjs(m.mt_date) < dayjs('2025-02-23') ||showAksi"
+              >
                 <Button size="icon" variant="teal"><ArrowRightSquare /></Button>
               </NuxtLink>
             </TableCell>
@@ -94,7 +110,6 @@ const selectedMapel = ref<Mapel>();
         </TableBody>
       </Table>
     </CardContent>
-    <CardFooter>
-    </CardFooter>
+    <CardFooter> </CardFooter>
   </Card>
 </template>

@@ -93,7 +93,7 @@ async function handleSubmit() {
       await login({
         ...values,
         remember:rememberMe.value
-      });
+      })
       toast.success("Login berhasil. Mengarahkan ke halaman beranda...");
     } catch (error) {
       console.log(error);
