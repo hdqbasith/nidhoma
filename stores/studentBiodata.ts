@@ -24,6 +24,7 @@ export const useStudentBiodataStore = defineStore('studentBiodata', () => {
         dataWali.value = response._data.dataWali;
         dataDomisili.value = response._data.dataDomisili;
         dataAsalSekolah.value = response._data.dataPersonal;
+        studentId.value = response._data.dataPersonal.value?.s_akun;
         console.log(response._data);
 
       }

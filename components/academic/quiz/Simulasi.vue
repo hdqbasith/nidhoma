@@ -51,7 +51,7 @@ console.log(soal);
 const simpan = () => {
   const data = ref<string[]>([]);
   jawab.value.forEach((j) => {
-    data.value[j.nomor-1] = j.jawab;
+    data.value[j.nomor - 1] = j.jawab.split("|").join("");
   });
   return client<Jawaban>("ulangan/jawaban", {
     method: "post",
@@ -102,24 +102,30 @@ const cekJawaban = async () => {
     data.durasi * 60 * 1000 -
     (Date.now() - (new Date(data.mulai).getTime() ?? Date.now()));
 
-  if (data.jawaban) {
-    const arrayJawaban = data.jawaban.split(",");
-    console.log(soal);
-    
-    soal.forEach((s, i) => {
-      jawab.value[i] = {
-        jawab: arrayJawaban[s.st_nomor-1],
-        nomor: s.st_nomor,
-      };
-    });
-  } else {
-    soal.forEach((s, i) => {
-      jawab.value[i] = {
-        jawab: "",
-        nomor: s.st_nomor,
-      };
-    });
-  }
+  const arrayJawaban = data.jawaban?.split(",");
+  soal.forEach((s, i) => {
+    jawab.value[i] = {
+      jawab: data.jawaban
+        ? arrayJawaban[s.st_nomor - 1]
+        : s.st_jawaban.length == 1
+        ? ""
+        : "||||",
+      nomor: s.st_nomor,
+      multi: s.st_jawaban.length == 1 ? false : true,
+    };
+    if (s.st_jawaban.length > 1) {
+      let temp=Array(5);
+      const tempJawab=[...jawab.value[i].jawab]
+      tempJawab.forEach((t)=>{
+        if(t=='a') temp[0]='a';
+        if(t=='b') temp[1]='b';
+        if(t=='c') temp[2]='c';
+        if(t=='d') temp[3]='d';
+        if(t=='e') temp[4]='e';
+      })
+      jawab.value[i].jawab = temp.join("|");
+    }
+  });
   console.log(waktu.value);
 
   if (waktu.value > 0) {
@@ -162,10 +168,42 @@ const style = {
 };
 const soalAktif = computed(() => soal[nomor.value - 1]);
 const updateJawab = (e: string) => {
-  jawab.value[nomor.value - 1] = {
-    jawab: e,
-    nomor: soalAktif.value.st_nomor,
-  };
+  // Jika soal ditandai (ragu), klik jawaban akan mengubah ke jawaban normal
+  if (jawab.value[nomor.value - 1].jawab == "r") {
+    if (jawab.value[nomor.value - 1].multi == false) {
+      jawab.value[nomor.value - 1].jawab = e;
+      jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+    } else {
+      let temp = ["", "", "", "", ""];
+      switch (e) {
+        case "a": temp[0] = "a"; break;
+        case "b": temp[1] = "b"; break;
+        case "c": temp[2] = "c"; break;
+        case "d": temp[3] = "d"; break;
+        case "e": temp[4] = "e"; break;
+      }
+      jawab.value[nomor.value - 1].jawab = temp.join("|");
+      jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+    }
+    return;
+  }
+  if (jawab.value[nomor.value - 1].multi == false) {
+    jawab.value[nomor.value - 1].jawab = e;
+    jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+  } else {
+    let temp = jawab.value[nomor.value - 1].jawab.split("|");
+    switch (e) {
+      case "a": temp[0] = temp[0] == "" ? "a" : ""; break;
+      case "b": temp[1] = temp[1] == "" ? "b" : ""; break;
+      case "c": temp[2] = temp[2] == "" ? "c" : ""; break;
+      case "d": temp[3] = temp[3] == "" ? "d" : ""; break;
+      case "e": temp[4] = temp[4] == "" ? "e" : ""; break;
+    }
+    if (temp.filter((t) => t != "").length <= soalAktif.value.st_jawaban.length) {
+      jawab.value[nomor.value - 1].jawab = temp.join("|");
+      jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+    }
+  }
 };
 const pilihan = ["a", "b", "c", "d", "e"];
 const hurufArab = ["أ", "ب", "ج", "د", "هـ"];
@@ -173,28 +211,28 @@ const angkaArab = (a: string) =>
   a.replace(/\d/g, (d: any) => "٠١٢٣٤٥٦٧٨٩"[d]).replace("!", "");
 const waktu = ref(0);
 const tandai = () => {
-  if (jawab.value[nomor.value - 1].jawab == "r") {
-    jawab.value[nomor.value - 1] = {
-      jawab: "",
-      nomor: soalAktif.value.st_nomor,
-    };
+  const currentJawab = jawab.value[nomor.value - 1];
+  if (currentJawab.jawab == "r") {
+    currentJawab.jawab = currentJawab.multi ? "||||" : "";
   } else {
-    jawab.value[nomor.value - 1] = {
-      jawab: "r",
-      nomor: soalAktif.value.st_nomor,
-    };
+    currentJawab.jawab = "r";
   }
 };
 const rekap = ref({
   terjawab: computed(
     () =>
-      soal.length -
-      jawab.value.filter(j => j.jawab == ""|| j.jawab=="r").length
+      jawab.value.filter(
+        (j) => (j.multi==false  && j.jawab != "r" && j.jawab.length==1) || (j.multi==true && j.jawab.split('|').join('').length>0 && j.jawab != 'r')
+      ).length
   ),
   kosong: computed(
-    () => jawab.value.filter(j => j.jawab == ""|| j.jawab=="r").length
+    () =>
+      soal.length -
+      jawab.value.filter(
+        (j) => (j.multi==false  && j.jawab != "r" && j.jawab.length==1) || (j.multi==true && j.jawab.split('|').join('').length>0 && j.jawab != 'r')
+      ).length
   ),
-  ragu: computed(() => jawab.value.filter(j => j.jawab == "r").length),
+  ragu: computed(() => jawab.value.filter((j) => j.jawab == "r").length),
 });
 const confirmSelesai = ref(false);
 const sisaWaktu = computed(() => {
@@ -260,32 +298,62 @@ const nilai=ref(()=>{
           :class="soalAktif.st_dir == 'rtl' && 'text-right'"
         ></div>
         <div v-for="(v, i) in pilihan" :key="'jawab' + v">
-          <div
-            v-if="soalAktif['st_' + v] && soalAktif.st_dir != 'rtl'"
-            class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
-            :class="
-              jawab[nomor - 1]?.jawab == v
-                ? style.terpilih
-                : jawab[nomor - 1]?.jawab == 'r'
-                ? style.ragu
-                : style.biasa
-            "
-            v-html="v + '. ' + soalAktif['st_' + v]"
-            @click="updateJawab(v)"
-          ></div>
-          <div
-            v-else-if="soalAktif['st_' + v] && soalAktif.st_dir == 'rtl'"
-            class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
-            v-html="hurufArab[i] + '. ' + angkaArab(soalAktif['st_' + v])"
-            @click="updateJawab(v)"
-            :class="
-              jawab[nomor - 1]?.jawab == v
-                ? style.terpilih
-                : jawab[nomor - 1]?.jawab == 'r'
-                ? style.ragu
-                : style.biasa
-            "
-          ></div>
+          <template v-if="soalAktif.st_jawaban.length == 1">
+            <div
+              v-if="soalAktif['st_' + v] && soalAktif.st_dir != 'rtl'"
+              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
+              :class="
+                jawab[nomor - 1]?.jawab == v
+                  ? style.terpilih
+                  : jawab[nomor - 1]?.jawab == 'r'
+                  ? style.ragu
+                  : style.biasa
+              "
+              v-html="v + '. ' + soalAktif['st_' + v]"
+              @click="updateJawab(v)"
+            ></div>
+            <div
+              v-else-if="soalAktif['st_' + v] && soalAktif.st_dir == 'rtl'"
+              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
+              v-html="hurufArab[i] + '. ' + angkaArab(soalAktif['st_' + v])"
+              @click="updateJawab(v)"
+              :class="
+                jawab[nomor - 1]?.jawab == v
+                  ? style.terpilih
+                  : jawab[nomor - 1]?.jawab == 'r'
+                  ? style.ragu
+                  : style.biasa
+              "
+            ></div>
+          </template>
+          <template v-else>
+            <div
+              v-if="soalAktif['st_' + v] && soalAktif.st_dir != 'rtl'"
+              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3"
+              :class="
+                jawab[nomor - 1]?.jawab.includes(v)
+                  ? style.terpilih
+                  : jawab[nomor - 1]?.jawab == 'r'
+                  ? style.ragu
+                  : style.biasa
+              "
+              v-html="v + '. ' + soalAktif['st_' + v]"
+              @click="updateJawab(v)"
+            ></div>
+            <div
+              v-else-if="soalAktif['st_' + v] && soalAktif.st_dir == 'rtl'"
+              class="border border-gray-200 p-3 rounded-full hover:bg-gradient-to-b hover:from-teal-600 hover:to-teal-900 hover:text-white cursor-pointer indent-3 my-3 text-right"
+              v-html="hurufArab[i] + '. ' + angkaArab(soalAktif['st_' + v])"
+              @click="updateJawab(v)"
+              :class="
+                jawab[nomor - 1]?.jawab.includes(v)
+                  ? style.terpilih
+                  : jawab[nomor - 1]?.jawab == 'r'
+                  ? style.ragu
+                  : style.biasa
+              "
+            ></div>
+          </template>
         </div>
       </CardContent>
       <CardFooter class="flex flex-row justify-center gap-x-5">

@@ -2,6 +2,7 @@
 import { AlignJustify } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -38,6 +39,9 @@ const submit=(val:  Recordable<any>)=>{
     }
   })
 }
+const downloadTemplate = URL.createObjectURL(
+  await client("/download/pengumuman-kelulusan")
+);
 </script>
 
 <template>
@@ -56,8 +60,9 @@ const submit=(val:  Recordable<any>)=>{
         <AuthChangePassword class="max-w-72" @submit="submit"/>
       </div>
       <div v-else>
-        Silakan klik ikon <AlignJustify class="inline" /> di pojok kiri atas
-        untuk mengakses menu yang tersedia
+      <a :href="downloadTemplate" download="Pengumuman.pdf">
+        <Button>Download Pengumuman Kelulusan</Button>
+      </a>
       </div>
     </CardContent>
     <CardFooter> </CardFooter>

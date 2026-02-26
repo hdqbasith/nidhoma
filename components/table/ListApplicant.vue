@@ -5,6 +5,7 @@ import DataTableColumnHeader from './applicant/DataTableColumnHeader.vue';
 import DataTableRowActions from './applicant/DataTableRowActions.vue';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Switch } from '~/packages/@core/ui-kit/shadcn-ui';
 import { NuxtImg } from '#components';
+import { Download } from 'lucide-vue-next';
 
 const props = defineProps<{
   dari: string | undefined
@@ -19,6 +20,15 @@ const actions = ref({
 })
 const uri = ref(props.dari == 'luar' ? 'admin/list-pendaftar-luar' : 'admin/list-melanjutkan')
 const data = ref()
+const arrayToCsv = (data: any) => {
+  const array = [Object.keys(data[0])].concat(data);
+  return array
+    .map((it) => {
+      return Object.values(it).toString();
+    })
+    .join("\n");
+};
+const download = ref();
 const getPendaftar = async () => await client<any>(
   uri.value,
   {
@@ -29,6 +39,9 @@ const getPendaftar = async () => await client<any>(
       if (response.status != 200) {
         toast.error('gagal mengambil data')
       } else data.value = response._data
+      download.value = URL.createObjectURL(
+        new Blob([arrayToCsv(data.value.pendaftar)], { type: "csv" })
+      );
     }
   }
 )
@@ -191,8 +204,9 @@ const columnsLuar: ColumnDef<any>[] = [
     header: 'Aksi',
     enableColumnFilter: false,
     cell: ({ row }) => {
-      return h('div', {}, [
+      return h('div', {class:'flex flex-row gap-x-1'}, [
         h('a', { href: '/admin/applicants/edit?akun=' + row.original.s_akun, 'v-show': actions.value.edit, 'target': '_blank' }, h(Button, { variant: 'default' }, () => 'edit')),
+        h('a', { href: '/admin/applicants/cetak-kartu-tes?akun=' + row.original.s_akun, 'v-show': actions.value.edit, 'target': '_blank' }, h(Button, { variant: 'teal' }, () => 'kartu')),
         h(Button, { variant: 'destructive', onClick() { dialogHapus.value = { show: true, row: row.index, akun: row.original.s_akun } } }, () => 'hapus'),
       ])
     }
@@ -295,6 +309,12 @@ const columnsDalam: ColumnDef<any>[] = [
     <!-- {{ dataTable }} -->
     <CardHeader variant="sky" class="text-white" v-if="dari == 'luar'">
       <CardTitle>Daftar Calon Siswa Baru</CardTitle>
+
+      <a :href="download" :download="'pendaftar.csv'"
+          ><Button variant="teal" size="sm" class="m-2"
+            ><Download :size="15" />&nbsp;Download Data</Button
+          ></a
+        >
       <CardDescription class="text-yellow-300">dari Luar TBS</CardDescription>
     </CardHeader>
     <CardHeader variant="green" class="text-white" v-else>

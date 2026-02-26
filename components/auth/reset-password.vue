@@ -14,7 +14,7 @@ interface Props {
 const props = defineProps<Props>()
 console.log(props);
 
-defineOptions({ name: 'Register' });
+defineOptions({ name: 'ResetPassword' });
 
 const loading = ref(false);
 // const authStore = useAuthStore();

@@ -217,35 +217,38 @@ const style = {
 };
 const soalAktif = computed(() => soal[nomor.value - 1]);
 const updateJawab = (e: string) => {
+  // Jika soal ditandai (ragu), klik jawaban akan mengubah ke jawaban normal
+  if (jawab.value[nomor.value - 1].jawab == "r") {
+    if (jawab.value[nomor.value - 1].multi == false) {
+      jawab.value[nomor.value - 1].jawab = e;
+      jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+    } else {
+      let temp = ["", "", "", "", ""];
+      switch (e) {
+        case "a": temp[0] = "a"; break;
+        case "b": temp[1] = "b"; break;
+        case "c": temp[2] = "c"; break;
+        case "d": temp[3] = "d"; break;
+        case "e": temp[4] = "e"; break;
+      }
+      jawab.value[nomor.value - 1].jawab = temp.join("|");
+      jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
+    }
+    return;
+  }
   if (jawab.value[nomor.value - 1].multi == false) {
     jawab.value[nomor.value - 1].jawab = e;
     jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
   } else {
     let temp = jawab.value[nomor.value - 1].jawab.split("|");
-    console.log(temp);
-    if (jawab.value[nomor.value - 1].jawab == "r") {
-      temp = "||||".split("|");
-    }
     switch (e) {
-      case "a":
-        temp[0] = temp[0] == "" ? "a" : "";
-        break;
-      case "b":
-        temp[1] = temp[1] == "" ? "b" : "";
-        break;
-      case "c":
-        temp[2] = temp[2] == "" ? "c" : "";
-        break;
-      case "d":
-        temp[3] = temp[3] == "" ? "d" : "";
-        break;
-      case "e":
-        temp[4] = temp[4] == "" ? "e" : "";
-        break;
+      case "a": temp[0] = temp[0] == "" ? "a" : ""; break;
+      case "b": temp[1] = temp[1] == "" ? "b" : ""; break;
+      case "c": temp[2] = temp[2] == "" ? "c" : ""; break;
+      case "d": temp[3] = temp[3] == "" ? "d" : ""; break;
+      case "e": temp[4] = temp[4] == "" ? "e" : ""; break;
     }
-    if (
-      temp.filter((t) => t != "").length <= soalAktif.value.st_jawaban.length
-    ) {
+    if (temp.filter((t) => t != "").length <= soalAktif.value.st_jawaban.length) {
       jawab.value[nomor.value - 1].jawab = temp.join("|");
       jawab.value[nomor.value - 1].nomor = soalAktif.value.st_nomor;
     }
@@ -257,16 +260,11 @@ const angkaArab = (a: string) =>
   a.replace(/\d/g, (d: any) => "٠١٢٣٤٥٦٧٨٩"[d]).replace("!", "");
 const waktu = ref(0);
 const tandai = () => {
-  if (jawab.value[nomor.value - 1].jawab == "r") {
-    jawab.value[nomor.value - 1] = {
-      jawab: "",
-      nomor: soalAktif.value.st_nomor,
-    };
+  const currentJawab = jawab.value[nomor.value - 1];
+  if (currentJawab.jawab == "r") {
+    currentJawab.jawab = currentJawab.multi ? "||||" : "";
   } else {
-    jawab.value[nomor.value - 1] = {
-      jawab: "r",
-      nomor: soalAktif.value.st_nomor,
-    };
+    currentJawab.jawab = "r";
   }
 };
 const rekap = ref({
